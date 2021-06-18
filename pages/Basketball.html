@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>WebAR</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+	</head>
+	<body>
+
+		<div id="info">
+			<p>WebAR</p>
+		</div>
+		
+
+		<script type="module">
+
+			import * as THREE from './build/three.module.js';
+			import { ARButton } from './jsm/webxr/ARButton.js';
+			import { OrbitControls } from './jsm/controls/OrbitControls.js';
+			import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+
+			let container;
+			let camera, scene, renderer, obj;
+			let controller;
+
+			let composer;
+			
+
+			let reticle;
+
+			let hitTestSource = null;
+			let hitTestSourceRequested = false;
+			var c=0;
+			let spotlight,spotlight2;
+
+			init();
+
+			
+
+			animate();
+
+			function init() {
+
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+
+				scene = new THREE.Scene();
+
+				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
+				
+
+				const hemilight1 = new THREE.HemisphereLight( 0xffeeb1, 0x080820, 4 );
+				//const hemilight2 = new THREE.HemisphereLight( 0xffeeb1, 0x080820, 4 );
+				//const light = new THREE.AmbientLight( 0x080820 );
+				
+				
+				spotlight =new THREE.SpotLight(0xffffff, 4);
+				spotlight.castShadow=true;
+				
+				spotlight.shadow.bias=-0.0000001;
+				spotlight.shadow.mapSize.width=1024*1024;
+				spotlight.shadow.mapSize.height=1024*1024;
+				
+				scene.add(spotlight);
+				//scene.add(hemilight1);
+
+				renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
+				renderer.shadowMap.enabled = true;
+				
+
+				renderer.xr.enabled = true;
+				container.appendChild( renderer.domElement );
+
+				document.body.appendChild( ARButton.createButton( renderer, { requiredFeatures: [ 'hit-test' ] } ) );
+
+
+				function onSelect() {
+					if(c==0){
+						if ( reticle.visible){
+
+							const loader = new GLTFLoader();
+
+							// Load a glTF resource
+							loader.load(
+								'../ARvantageModels/basketball.glb',
+								function ( gltf ) {
+
+									
+									
+									var obj=gltf.scene;
+									obj.scale.set(0.2, 0.2, 0.2);
+									obj.rotateY( - Math.PI / 4 ),
+									obj.position.setFromMatrixPosition( reticle.matrix );
+									obj.position.y+=1;
+									obj.castShadow=true;
+									obj.traverse(function(node) {
+										if (node instanceof THREE.Mesh) {
+											node.castShadow = true;
+											node.material.depthTest=true;
+											node.material.depthWrite=true;
+										}
+									});
+		
+									scene.add(obj);
+								}
+								
+							);
+
+							const floor=new THREE.Mesh(
+								new THREE.BoxGeometry( 0.1, 1, 0.2, 32).translate( 0, 0.1, 0 ),
+								new THREE.ShadowMaterial({ opacity:0.3})
+							);
+
+							floor.receiveShadow = true;
+							floor.scale.x=100;
+							floor.scale.y=0.1;
+							floor.scale.z=100;
+							floor.position.setFromMatrixPosition( reticle.matrix );
+							scene.add(floor);
+						
+						}
+						c+=1;
+					}
+				}
+
+				controller = renderer.xr.getController( 0 );
+				controller.addEventListener( 'select', onSelect );
+				scene.add( controller );
+
+				reticle = new THREE.Mesh(
+					new THREE.RingGeometry( 0.15, 0.2, 32 ).rotateX( - Math.PI / 2 ),
+					new THREE.MeshBasicMaterial()
+				);
+				reticle.matrixAutoUpdate = false;
+				reticle.visible = false;
+				scene.add( reticle );
+
+				window.addEventListener( 'resize', onWindowResize );
+
+			}
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+			}
+
+			function animate() {
+
+				renderer.setAnimationLoop( render );
+				spotlight.position.set(
+					camera.position.x+10,
+					camera.position.y+10,
+					camera.position.z+10
+				);
+
+			}
+
+			function render( timestamp, frame ) {
+
+				if ( frame ) {
+
+					const referenceSpace = renderer.xr.getReferenceSpace();
+					const session = renderer.xr.getSession();
+
+					if ( hitTestSourceRequested === false ) {
+
+						session.requestReferenceSpace( 'viewer' ).then( function ( referenceSpace ) {
+
+							session.requestHitTestSource( { space: referenceSpace } ).then( function ( source ) {
+
+								hitTestSource = source;
+
+							} );
+
+						} );
+
+						session.addEventListener( 'end', function () {
+
+							hitTestSourceRequested = false;
+							hitTestSource = null;
+
+						} );
+
+						hitTestSourceRequested = true;
+
+					}
+
+					if ( hitTestSource ) {
+
+						const hitTestResults = frame.getHitTestResults( hitTestSource );
+
+						if ( hitTestResults.length ) {
+
+							const hit = hitTestResults[ 0 ];
+
+							reticle.visible = true;
+							reticle.matrix.fromArray( hit.getPose( referenceSpace ).transform.matrix );
+
+						} else {
+
+							reticle.visible = false;
+
+						}
+
+					}
+
+				}
+				renderer.render( scene, camera );
+			}
+
+		</script>
+	</body>
+</html>

@@ -1,10 +1,110 @@
 ﻿<!DOCTYPE html>
+
 <html>
-<body>
+    <head>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&display=swap" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 
-<h1>AR.js</h1>
-<p>Hello !</p>
-<a href="test.html">test</a>
+    <title>ARvantage</title>
+    <style>
 
-</body>
+        body{
+            background-image:url('bg.jpg');
+            background-repeat: repeat; 
+            background-position: center;
+            background-size: cover;
+            padding-left:17px;
+        }        
+
+        div.gallery {
+            margin:auto;
+            border: 2px solid #ccc;
+            float: left;
+            padding: 2px;
+            width: 180px;
+            height: 180px;
+        }
+
+        div.gallery:hover {
+            border: 1px solid #777;
+        }
+
+        div.gallery img {
+            width: 100%;
+            height: 100%;
+        }
+
+        div.desc {
+            padding: 10px;
+            background-color:white;
+            margin:10px;
+            width:150px;
+            border:3px solid #ccc;
+            text-align: center;
+        }
+
+        div.heading {
+            font-family: 'Comfortaa', cursive;
+            color:white;
+            font-weight: 900;
+            padding: 15px;
+            border: 5px solid #ccc;
+            text-align: center;
+        }
+
+        div.footer {
+            position: fixed ;
+            background-color:gray;
+            bottom: 0.1px;
+            width: 95.5%;
+            height: 5%;
+            border: 5px solid #ccc;
+            text-align: center;
+            color: white;
+        }
+
+    </style>
+
+    </head>
+    <body>
+
+        <div class="heading">
+            <h1><b>Welcome to ARvantage</b></h1>
+            <h3>Check out the products with an AR experience </h3>
+        </div>
+        </br></br>
+        <!--<div id="container">
+            <div class='gallery'><img src="./images/Arrows.PNG" width='600' height='600' title="Arrows"></div>
+            <div class='gallery'><img src="./images/Arrows.PNG" width='600' height='400'></div>
+            <div class='gallery'><img src="./images/Arrows.PNG" width='600' height='400'></div>
+            <div class='gallery'><img src="./images/Arrows.PNG" width='600' height='400'></div>
+            <div class='gallery'><img src="./images/Arrows.PNG" width='600' height='400'></div>
+            <div class='gallery'><img src="./images/Arrows.PNG" width='600' height='400'></div>
+            <div class='gallery'><img src="./images/Arrows.PNG" width='600' height='400'></div>
+            <div class='gallery'><img src="./images/Arrows.PNG" width='600' height='400'></div>
+            <div class='gallery'><img src="./images/Arrows.PNG" width='600' height='400'></div>
+        </div>
+        -->
+        <div id="container">
+            
+        </div>
+        <script>
+            var x ="", i;
+            const images_list=['Baseball-Bat-Metal', 'Baseball-Bat-Wood', 'Basketball', 'Dumbbell', 'Arrows', 'Foosball', 'Nike-Shoes', 'Racing-Suit', 'Rubik\'s-Cube', 'Skateboard', 'Tyre', 'Billiards-Balls'];
+            
+            for (i=0;i<images_list.length;i++) {
+                x=x+"<a href="+'./pages/'+images_list[i]+'.html'+"><div class='gallery'><img src="+'./images/'+images_list[i]+'.PNG'+" width='600' height='400' title="+images_list[i]+"></div></a>";
+            }
+            document.getElementById("container").innerHTML = x;
+
+        </script>
+        
+        
+        <div class="footer">
+            <p>ARVANTAGE</p>
+            <p>---------</p>
+        </div
+    </body>
+
 </html>
