@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 
 <html>
     <head>
@@ -14,14 +14,18 @@
             background-repeat: repeat; 
             background-position: center;
             background-size: cover;
-            padding-left:17px;
-        }        
+            padding-left:1px;
+        }      
+        
+        div.container{
+            margin:auto;
+            columns:4;
+        }
 
         div.gallery {
             margin:auto;
-            border: 2px solid #ccc;
-            float: left;
-            padding: 2px;
+            
+            padding-bottom:10px;
             width: 180px;
             height: 180px;
         }
@@ -54,14 +58,14 @@
         }
 
         div.footer {
-            position: fixed ;
+            font-family: 'Comfortaa', cursive;
+            bottom: 1px;
+            color:white;
+            font-weight: 900;
+            padding: 15px;
             background-color:gray;
-            bottom: 0.1px;
-            width: 95.5%;
-            height: 5%;
             border: 5px solid #ccc;
             text-align: center;
-            color: white;
         }
 
     </style>
@@ -74,19 +78,8 @@
             <h3>Check out the products with an AR experience </h3>
         </div>
         </br></br>
-        <!--<div id="container">
-            <div class='gallery'><img src="./images/Arrows.PNG" width='600' height='600' title="Arrows"></div>
-            <div class='gallery'><img src="./images/Arrows.PNG" width='600' height='400'></div>
-            <div class='gallery'><img src="./images/Arrows.PNG" width='600' height='400'></div>
-            <div class='gallery'><img src="./images/Arrows.PNG" width='600' height='400'></div>
-            <div class='gallery'><img src="./images/Arrows.PNG" width='600' height='400'></div>
-            <div class='gallery'><img src="./images/Arrows.PNG" width='600' height='400'></div>
-            <div class='gallery'><img src="./images/Arrows.PNG" width='600' height='400'></div>
-            <div class='gallery'><img src="./images/Arrows.PNG" width='600' height='400'></div>
-            <div class='gallery'><img src="./images/Arrows.PNG" width='600' height='400'></div>
-        </div>
-        -->
-        <div id="container">
+
+        <div id="container" class="container">
             
         </div>
         <script>
@@ -100,11 +93,10 @@
 
         </script>
         
-        
+        </br></br>
         <div class="footer">
             <p>ARVANTAGE</p>
-            <p>---------</p>
-        </div
+        </div>
     </body>
 
 </html>
