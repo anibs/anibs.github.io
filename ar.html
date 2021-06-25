@@ -228,7 +228,7 @@
 									obj.scale.set(1, 1, 1);
 									obj.rotateY( - Math.PI / 4 ),
 									obj.position.setFromMatrixPosition( reticle.matrix );
-									obj.position.y+=2;
+									obj.position.y+=1;
 									obj.castShadow=true;
 									obj.traverse(function(node) {
 										if (node instanceof THREE.Mesh) {
