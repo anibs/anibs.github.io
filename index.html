@@ -5,8 +5,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&display=swap" rel="stylesheet">
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-analytics.js"></script>
 
     <title>ARvantage</title>
+
     <style>
 
         body{
@@ -19,19 +23,15 @@
         
         div.container{
             margin:auto;
-            columns:4;
+            columns:5;
         }
 
         div.gallery {
             margin:auto;
             
             padding-bottom:10px;
-            width: 180px;
-            height: 180px;
-        }
-
-        div.gallery:hover {
-            border: 1px solid #777;
+            width: 150px;
+            height: 150px;
         }
 
         div.gallery img {
@@ -49,6 +49,9 @@
         }
 
         div.heading {
+            background-image:url('bg.gif'), url('bg.gif');
+            background-repeat: no-repeat, no-repeat; 
+            background-position: left, right;
             font-family: 'Comfortaa', cursive;
             color:white;
             font-weight: 900;
@@ -80,16 +83,44 @@
         </br></br>
 
         <div id="container" class="container">
-            
         </div>
         <script>
-            var x ="", i;
-            const images_list=['Baseball-Bat-Metal', 'Baseball-Bat-Wood', 'Basketball', 'Dumbbell', 'Arrows', 'Foosball', 'Nike-Shoes', 'Racing-Suit', 'Rubik\'s-Cube', 'Skateboard', 'Tyre', 'Billiards-Balls'];
-            
-            for (i=0;i<images_list.length;i++) {
-                x=x+"<a href="+'./pages/'+images_list[i]+'.html'+"><div class='gallery'><img src="+'./images/'+images_list[i]+'.PNG'+" width='600' height='400' title="+images_list[i]+"></div></a>";
-            }
-            document.getElementById("container").innerHTML = x;
+
+
+            var firebaseConfig = {
+                apiKey: "AIzaSyDJecdvv4l-AIl7du5YpPy-RnoSJcRHOtU",
+                authDomain: "hello-world-2f407.firebaseapp.com",
+                databaseURL: "https://hello-world-2f407.firebaseio.com",
+                projectId: "hello-world-2f407",
+                storageBucket: "hello-world-2f407.appspot.com",
+                messagingSenderId: "494069966463",
+                appId: "1:494069966463:web:838651b9443a334cfe014a",
+                measurementId: "G-YMCEW9C328"
+            };
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            firebase.analytics();
+            const db=firebase.firestore();
+            var list_images_src=[];
+            var list_names=[];
+            db.settings({timestampsInSnapshots : true});
+            db.collection('assets').get().then((snapshot)=>{
+                snapshot.docs.forEach(doc=>{
+                    //console.log(doc.data().files[1]);
+                    let str="";
+                    let name="";
+                    str=doc.data().files[1];
+                    name=doc.data().asset_name;
+                    list_images_src.push(str);
+                    list_names.push(name);
+                })
+                var i;
+                var x;
+                for (i=0;i<list_images_src.length;i++) {
+                    x="<a href="+'./ar?id='+list_names[i]+"><div class='gallery'><img src="+list_images_src[i]+" width='600' height='400'></div></a>";
+                    document.getElementById("container").innerHTML += x;
+                }                
+            })
 
         </script>
         
