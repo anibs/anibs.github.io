@@ -60,7 +60,7 @@
             
         <div id='div' style='position: fixed;'>
 			</br></br>
-			<button type="button" class="collapsible">MORE</button>
+			<button type="button" id="collapsible" class="collapsible">ARVANTAGE</button>
 			<div class="content">
 				<p id='assetinfo'>Product : </p></br>
 				<p id='assetinfo'>Color : </p></br>
@@ -298,6 +298,7 @@
 
 									loadinggif=document.getElementById('loading');
 									loadinggif.remove();
+									var asset_nameele=document.getElementById('collapsible').textContent='MORE';
 									var asset_nameele=document.getElementById('assetinfo').textContent+=asset_name;
 									var imgone=document.getElementById('one');
 									imgone.innerHTML='<img src='+thumbone+' height='+120+' width='+120+'/>';
