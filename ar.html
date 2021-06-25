@@ -4,10 +4,53 @@
 		<title>WebAR</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-		<script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+		<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-analytics.js"></script>
+
+		<style>
+
+			.collapsible {
+			  background-color: #eee;
+
+			  color: #444;
+			  cursor: pointer;
+			  margin-left: 150%;
+			  margin-right: 150%;
+			  padding:18px;
+			  width: 200%;
+			  border: none;
+			  text-align: center;
+			  outline: none;
+			  font-size: 15px;
+			}
+
+			/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+			.active, .collapsible:hover {
+			  background-color: #ccc;
+			}
+
+			/* Style the collapsible content. Note: hidden by default */
+			.content {
+			  padding: 0 18px;
+			  display: none;
+			  overflow: hidden;
+			  width:180%;
+			  height:500px;
+			  margin-left: 150%;
+			  margin-right: 150%;
+			  background-color: #f1f1f1;
+			  font-size: 25px;
+			}
+			.loading{
+				margin-left: 240%;
+				margin-right: 240%;
+			}
+			
+}
+
+		</style>
 
 	</head>
 	<body>
@@ -16,19 +59,45 @@
 			<p>WebAR</p>
 		</div>
             
-        <div id='div' style='position: fixed; top: 50%;left: 50%;'>
+        <div id='div' style='position: fixed; top: 0%;'>
 			
-			<img id='loading' height='50' width='50'>
+			<img id='loading' class="loading" height='50' width='50'>
+			<button type="button" class="collapsible">MORE</button>
+			<div class="content">
+			  <p id='assetinfo'>Product : </p></br>
+			  <p id='assetinfo'>Color : </p></br>
+			  <button id='one' class='extrathumbnail'></button>
+			  <button type='img' id='two' class='extrathumbnail' src='' height='150' width='150'>
+			</div>
 		</div>
-		
-		<script type="module">
 			
-			var id=0;
+		<script type="module">
+
+
+
+			var coll = document.getElementsByClassName("collapsible");
+			var i;
+
+			for (i = 0; i < coll.length; i++) {
+			  coll[i].addEventListener("click", function() {
+				this.classList.toggle("active");
+				var content = this.nextElementSibling;
+				if (content.style.display === "block") {
+				  content.style.display = "none";
+				} else {
+				  content.style.display = "block";
+				}
+			  });
+			}
+			
+			//var id=0;
 			var location_name='';
-			console.log(location_name);
+			
 			location_name=location.search;
+			console.log(location_name);
 			var asset_name=location_name.substring(4);
 			console.log(asset_name);
+
 
 			var firebaseConfig = {
                 apiKey: "AIzaSyDJecdvv4l-AIl7du5YpPy-RnoSJcRHOtU",
@@ -46,27 +115,50 @@
 			const db=firebase.firestore();
 			var list_glbs=[];
 			var list_names=[];
+			var list_thumbnail_one=[];
+			var list_thumbnail_two=[];
+			let glb="";
+			let name="";
+			var thumbone,thumbtwo
 			db.settings({timestampsInSnapshots : true});
+
+			
 
 			db.collection('assets').get().then((snapshot)=>{
 				//console.log(snapshot.docs);
+				console.log(snapshot.docs.length);
 				snapshot.docs.forEach(doc=>{
 					//console.log(doc.data().files[0]);
-					let glb="";
-					let name="";
-					glb=doc.data().files[0];
-					name=doc.data().asset_name;
-					list_glbs.push(glb);
-					list_names.push(name);
+					if(asset_name==doc.data().asset_name){
+						
+						glb=doc.data().files[0];
+						if(doc.data().files.length>2){
+							thumbone=doc.data().files[2];
+							//list_thumbnail_one.push(thumbone);
+							thumbtwo=doc.data().files[3]
+							//list_thumbnail_two.push(thumbtwo);
+						}
+						else{
+							thumbone='';
+							//list_thumbnail_one.push(thumbone);
+							thumbtwo='';
+							//list_thumbnail_two.push(thumbtwo);
+						}
+					
+						name=doc.data().asset_name;
+						//list_glbs.push(glb);
+						//list_names.push(name);
+					}
+					
 				})
 				
-				for(var i=0;i<list_names.length;i++){
+				/*for(var i=0;i<list_names.length;i++){
 					if(list_names[i]==asset_name){
 						console.log(i);
 						id=i;
 						break;
 					}
-				}
+				}*/
 			})
 
 			import * as THREE from './build/three.module.js';
@@ -75,16 +167,16 @@
 			//import { DragControls } from './jsm/controls/DragControls.js';
 			import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
 			
-			let container;
-			let camera, scene, renderer, obj, controls, dragcontrols;
+			let container;var clicksone=0;var clickstwo=0;
+			let camera, scene, renderer, controls, dragcontrols;
 			let controller;
-
+			var obj;
 			let composer;
 			
 			var infobutton;var divObj;var loadinggif;
 
 			let reticle;
-
+			var changeMat, originalCol;
 			let hitTestSource = null;
 			let hitTestSourceRequested = false;
 			var c=0;
@@ -95,42 +187,6 @@
 
 			function init() {
 
-
-				
-				/*
-					const light = new THREE.AmbientLight(0xffffff, 1);
-					const directionalLight = new THREE.DirectionalLight(0xffffff, 0.3);
-					directionalLight.position.set(10, 15, 10);
-
-					// We want this light to cast shadow.
-					directionalLight.castShadow = true;
-
-					// Make a large plane to receive our shadows
-					const planeGeometry = new THREE.PlaneGeometry(2000, 2000);
-					// Rotate our plane to be parallel to the floor
-					planeGeometry.rotateX(-Math.PI / 2);
-
-					// Create a mesh with a shadow material, resulting in a mesh
-					// that only renders shadows once we flip the `receiveShadow` property.
-					const shadowMesh = new THREE.Mesh(planeGeometry, new THREE.ShadowMaterial({
-					  color: 0x111111,
-					  opacity: 0.2,
-					}));
-
-					// Give it a name so we can reference it later, and set `receiveShadow`
-					// to true so that it can render our model's shadow.
-					shadowMesh.name = 'shadowMesh';
-					shadowMesh.receiveShadow = true;
-					shadowMesh.position.y = 10000;
-
-					// Add lights and shadow material to scene.
-					scene.add(shadowMesh);
-					scene.add(light);
-					scene.add(directionalLight);
-				*/
-
-
-
 				container = document.getElementById('div');
 				document.body.appendChild( container );
 
@@ -139,47 +195,14 @@
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
 				
 
-				/*const hemilight1 = new THREE.HemisphereLight( 0xffeeb1, 0x080820, 4 );
-
-				spotlight =new THREE.SpotLight(0xffffff, 4);
-				spotlight.position.set( 100, 1000, 100 );
-				spotlight.castShadow=true;
-				
-				spotlight.shadow.bias=-0.0000001;
-				spotlight.shadow.mapSize.width=1024*1024;
-				spotlight.shadow.mapSize.height=1024*1024;
-				
-				scene.add(spotlight);*/
-				//scene.add(hemilight1);
-
-
 				const light = new THREE.AmbientLight(0xffffff, 1);
+				light.position.set(10,10,10);
 				const directionalLight = new THREE.DirectionalLight(0xffffff, 4);
 				directionalLight.position.set(10, 100, 10);
 
-				// We want this light to cast shadow.
 				directionalLight.castShadow = true;
 
-				// Make a large plane to receive our shadows
-				const planeGeometry = new THREE.PlaneGeometry(2000, 2000);
-				// Rotate our plane to be parallel to the floor
-				planeGeometry.rotateX(-Math.PI / 2);
-
-				// Create a mesh with a shadow material, resulting in a mesh
-				// that only renders shadows once we flip the `receiveShadow` property.
-				const shadowMesh = new THREE.Mesh(planeGeometry, new THREE.ShadowMaterial({
-					color: 0x111111,
-					opacity: 0.2,
-				}));
-
-				// Give it a name so we can reference it later, and set `receiveShadow`
-				// to true so that it can render our model's shadow.
-				shadowMesh.name = 'shadowMesh';
-				shadowMesh.receiveShadow = true;
-				shadowMesh.position.y = -1;
-
-				// Add lights and shadow material to scene.
-				scene.add(shadowMesh);
+				
 				scene.add(light);
 				scene.add(directionalLight);
 
@@ -192,7 +215,12 @@
 				container.appendChild( renderer.domElement );
 
 				controls= new OrbitControls(camera, renderer.domElement);
-
+				controls.addEventListener('change', render);
+				controls.minDistance = 2;
+				controls.maxDistance = 10;
+				controls.target.set(0, 0, -0.2);
+				controls.enableDamping = true;
+				controls.dampingFactor = 0.05;
 				
 
 
@@ -212,63 +240,114 @@
 							const loader = new GLTFLoader();
 							loader.crossOrigin='true';
 							console.log(asset_name);
-							console.log(id);
+							//console.log(id);
 							// Load a glTF resource
 							loadinggif=document.createElement('image');
 							document.getElementById('loading').src='./loading.gif';
+							const planeGeometry = new THREE.PlaneGeometry(2000, 2000);
+							planeGeometry.rotateX(-Math.PI / 2);
+
+							const shadowMesh = new THREE.Mesh(planeGeometry, new THREE.ShadowMaterial({
+								color: 0x111111,
+								opacity: 0.5,
+							}));	
+
+							shadowMesh.position.setFromMatrixPosition( reticle.matrix );
+							shadowMesh.name = 'shadowMesh';
+							shadowMesh.receiveShadow = true;
+							shadowMesh.position.y = -1;
+
+							scene.add(shadowMesh);
 							loader.load(
 
-								String(list_glbs[id]),
+								String(glb),
 								function ( gltf ) {
-
-									
-									
+									var count =0 ;
 									obj=gltf.scene;
-									//obj.new THREE.Mesh()
 									obj.scale.set(1, 1, 1);
 									obj.rotateY( - Math.PI / 4 ),
 									obj.position.setFromMatrixPosition( reticle.matrix );
 									obj.position.y+=1;
 									obj.castShadow=true;
 									obj.traverse(function(node) {
-										if (node instanceof THREE.Mesh) {
+										if (node.isMesh) {
+											
+											if(count==0){
+												count=1;
+												changeMat=node.name;
+												originalCol=node.material.color.getHex();
+												
+												//console.log(originalCol.r, originalCol.g, originalCol.b);
+											}
 											node.castShadow = true;
 											node.material.depthTest=true;
 											node.material.depthWrite=true;
+											
 										}
 									});
 		
 									scene.add(obj);
+
+									var box = new THREE.Box3();
+									box.setFromObject(obj);
+									box.center(controls.target);
+
+									controls.update();
+									render();
+
 									loadinggif=document.getElementById('loading');
 									loadinggif.remove();
-									infobutton=document.createElement("BUTTON");
-									infobutton.innerHTML="MORE";
-									infobutton.style.background = "red";
-									infobutton.style.borderRadius = "50px";
-									infobutton.style.left = "200px";
-									infobutton.style.top = "2px"; 
-									divObj=document.getElementById('div');
-									divObj.appendChild(infobutton);
+									var asset_nameele=document.getElementById('assetinfo').textContent+=asset_name;
+									var imgone=document.getElementById('one');
+									imgone.innerHTML='<img src='+thumbone+' height='+120+' width='+120+'/>';
+									var imgtwo=document.getElementById('two');
+									imgtwo.innerHTML='<img src='+thumbtwo+' height='+120+' width='+120+'/>';
 									
+									imgone.onclick=function MatOne() {
+										
+										clicksone++;
+										
+										obj.traverse(function(node) {
+											if (node.isMesh) {
+												
+												if(node.name==changeMat){
+													//var color1=node.material.color;
+													//console.log(color1);
+													if(clicksone%2==0){
+														node.material.color.setHex(originalCol);
+													}
+													else{
+														node.material.color.setHex(0xff4500);
+													}
+												}
+											}
+										});
+									}
 									
-									
+									imgtwo.onclick=function MatTwo() {
+										clickstwo++;
+										
+										obj.traverse(function(node) {
+											if (node.isMesh) {
+												
+												if(node.name==changeMat){
+													//var color1=node.material.color;
+													//console.log(color1);
+													if(clickstwo%2==0){
+														node.material.color.setHex(originalCol);
+													}
+													else{
+														node.material.color.setHex(0xffff00);
+													}
+												}
+											}
+										});
+									}
+
 								}
 								
 							);
-
-							/*const floor=new THREE.Mesh(
-								new THREE.BoxGeometry( 0.1, 1, 0.2, 32).translate( 0, 0.1, 0 ),
-								new THREE.ShadowMaterial({ opacity:0.3})
-							);
-
-							floor.receiveShadow = true;
-							floor.scale.x=100;
-							floor.scale.y=0.1;
-							floor.scale.z=100;
-							floor.position.setFromMatrixPosition( reticle.matrix );
-							scene.add(floor);
-							*/
-						
+							
 						}
 						c+=1;
 					}
@@ -286,7 +365,7 @@
 				reticle.visible = false;
 				scene.add( reticle );
 
-				window.addEventListener( 'resize', onWindowResize );
+				window.addEventListener( 'resize', onWindowResize, false );
 
 
 				renderer.domElement.addEventListener('touchstart', function(e){
@@ -327,24 +406,22 @@
 				}
 			}
 
-				animate();
+				
 
 
 			function onWindowResize() {
 
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
-
 				renderer.setSize( window.innerWidth, window.innerHeight );
-				//render();
+				//animate();
 			}
 
 			function animate() {
 
-				requestAnimationFrame( animate );
 				renderer.setAnimationLoop( render );
-
-
+				requestAnimationFrame( animate );
+				controls.update();
 			}
 
 			function render( timestamp, frame ) {
