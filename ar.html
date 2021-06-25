@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>WebAR</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-analytics.js"></script>
+
+	</head>
+	<body>
+		
+		<div id="info">
+			<p>WebAR</p>
+		</div>
+            
+        <div id='div' style='position: fixed; top: 0%;left: 50%;'>
+			
+			<img id='loading' height='50' width='50'>
+		</div>
+		
+		<script type="module">
+			
+			var id=0;
+			var location_name='';
+			console.log(location_name);
+			location_name=location.search;
+			var asset_name=location_name.substring(4);
+			console.log(asset_name);
+
+			var firebaseConfig = {
+                apiKey: "AIzaSyDJecdvv4l-AIl7du5YpPy-RnoSJcRHOtU",
+                authDomain: "hello-world-2f407.firebaseapp.com",
+                databaseURL: "https://hello-world-2f407.firebaseio.com",
+                projectId: "hello-world-2f407",
+                storageBucket: "hello-world-2f407.appspot.com",
+                messagingSenderId: "494069966463",
+                appId: "1:494069966463:web:838651b9443a334cfe014a",
+                measurementId: "G-YMCEW9C328"
+            };
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            firebase.analytics();
+			const db=firebase.firestore();
+			var list_glbs=[];
+			var list_names=[];
+			db.settings({timestampsInSnapshots : true});
+
+			db.collection('assets').get().then((snapshot)=>{
+				//console.log(snapshot.docs);
+				snapshot.docs.forEach(doc=>{
+					//console.log(doc.data().files[0]);
+					let glb="";
+					let name="";
+					glb=doc.data().files[0];
+					name=doc.data().asset_name;
+					list_glbs.push(glb);
+					list_names.push(name);
+				})
+				
+				for(var i=0;i<list_names.length;i++){
+					if(list_names[i]==asset_name){
+						console.log(i);
+						id=i;
+						break;
+					}
+				}
+			})
+
+			import * as THREE from './build/three.module.js';
+			import { ARButton } from './jsm/webxr/ARButton.js';
+			import { OrbitControls } from './jsm/controls/OrbitControls.js';
+			import { DragControls } from './jsm/controls/DragControls.js';
+			import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
+			
+			let container;
+			let camera, scene, renderer, obj, controls, dragcontrols;
+			let controller;
+
+			let composer;
+			
+			var infobutton;var divObj;var loadinggif;
+
+			let reticle;
+
+			let hitTestSource = null;
+			let hitTestSourceRequested = false;
+			var c=0;
+			let spotlight,spotlight2;
+			
+			init();
+			animate();			
+
+			function init() {
+
+
+				
+				/*
+					const light = new THREE.AmbientLight(0xffffff, 1);
+					const directionalLight = new THREE.DirectionalLight(0xffffff, 0.3);
+					directionalLight.position.set(10, 15, 10);
+
+					// We want this light to cast shadow.
+					directionalLight.castShadow = true;
+
+					// Make a large plane to receive our shadows
+					const planeGeometry = new THREE.PlaneGeometry(2000, 2000);
+					// Rotate our plane to be parallel to the floor
+					planeGeometry.rotateX(-Math.PI / 2);
+
+					// Create a mesh with a shadow material, resulting in a mesh
+					// that only renders shadows once we flip the `receiveShadow` property.
+					const shadowMesh = new THREE.Mesh(planeGeometry, new THREE.ShadowMaterial({
+					  color: 0x111111,
+					  opacity: 0.2,
+					}));
+
+					// Give it a name so we can reference it later, and set `receiveShadow`
+					// to true so that it can render our model's shadow.
+					shadowMesh.name = 'shadowMesh';
+					shadowMesh.receiveShadow = true;
+					shadowMesh.position.y = 10000;
+
+					// Add lights and shadow material to scene.
+					scene.add(shadowMesh);
+					scene.add(light);
+					scene.add(directionalLight);
+				*/
+
+
+
+				container = document.getElementById('div');
+				document.body.appendChild( container );
+
+				scene = new THREE.Scene();
+
+				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
+				
+
+				/*const hemilight1 = new THREE.HemisphereLight( 0xffeeb1, 0x080820, 4 );
+
+				spotlight =new THREE.SpotLight(0xffffff, 4);
+				spotlight.position.set( 100, 1000, 100 );
+				spotlight.castShadow=true;
+				
+				spotlight.shadow.bias=-0.0000001;
+				spotlight.shadow.mapSize.width=1024*1024;
+				spotlight.shadow.mapSize.height=1024*1024;
+				
+				scene.add(spotlight);*/
+				//scene.add(hemilight1);
+
+
+				const light = new THREE.AmbientLight(0xffffff, 1);
+				const directionalLight = new THREE.DirectionalLight(0xffffff, 4);
+				directionalLight.position.set(10, 100, 10);
+
+				// We want this light to cast shadow.
+				directionalLight.castShadow = true;
+
+				// Make a large plane to receive our shadows
+				const planeGeometry = new THREE.PlaneGeometry(2000, 2000);
+				// Rotate our plane to be parallel to the floor
+				planeGeometry.rotateX(-Math.PI / 2);
+
+				// Create a mesh with a shadow material, resulting in a mesh
+				// that only renders shadows once we flip the `receiveShadow` property.
+				const shadowMesh = new THREE.Mesh(planeGeometry, new THREE.ShadowMaterial({
+					color: 0x111111,
+					opacity: 0.2,
+				}));
+
+				// Give it a name so we can reference it later, and set `receiveShadow`
+				// to true so that it can render our model's shadow.
+				shadowMesh.name = 'shadowMesh';
+				shadowMesh.receiveShadow = true;
+				shadowMesh.position.y = -1;
+
+				// Add lights and shadow material to scene.
+				scene.add(shadowMesh);
+				scene.add(light);
+				scene.add(directionalLight);
+
+
+				renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
+
+				renderer.xr.enabled = true;
+				renderer.xr.enabled = true;
+				renderer.shadowMap.enabled = true;
+				container.appendChild( renderer.domElement );
+
+				controls= new OrbitControls(camera, renderer.domElement);
+
+				
+
+
+				let options={
+					requiredFeatures:['hit-test'],
+					optionalFeatures:['dom-overlay'],
+				}
+				options.domOverlay={root:document.getElementById('div')};
+				document.body.appendChild( ARButton.createButton( renderer, options ) );
+
+
+
+				function onSelect() {
+					if(c==0){
+						if (reticle.visible){
+
+							const loader = new GLTFLoader();
+							loader.crossOrigin='true';
+							console.log(asset_name);
+							console.log(id);
+							// Load a glTF resource
+							loadinggif=document.createElement('image');
+							document.getElementById('loading').src='./loading.gif';
+							loader.load(
+
+								String(list_glbs[id]),
+								function ( gltf ) {
+
+									
+									
+									obj=gltf.scene;
+									//obj.new THREE.Mesh()
+									obj.scale.set(1, 1, 1);
+									obj.rotateY( - Math.PI / 4 ),
+									obj.position.setFromMatrixPosition( reticle.matrix );
+									obj.position.y+=2;
+									obj.castShadow=true;
+									obj.traverse(function(node) {
+										if (node instanceof THREE.Mesh) {
+											node.castShadow = true;
+											node.material.depthTest=true;
+											node.material.depthWrite=true;
+										}
+									});
+		
+									scene.add(obj);
+									loadinggif=document.getElementById('loading');
+									loadinggif.remove();
+									/*infobutton=document.createElement("BUTTON");
+									infobutton.innerHTML="MORE";
+									infobutton.style.background = "red";
+									infobutton.style.borderRadius = "50px";
+									infobutton.style.left = "200px";
+									infobutton.style.top = "2px"; 
+									divObj=document.getElementById('div');
+									divObj.appendChild(infobutton);
+									*/
+									
+									
+								}
+								
+							);
+
+							/*const floor=new THREE.Mesh(
+								new THREE.BoxGeometry( 0.1, 1, 0.2, 32).translate( 0, 0.1, 0 ),
+								new THREE.ShadowMaterial({ opacity:0.3})
+							);
+
+							floor.receiveShadow = true;
+							floor.scale.x=100;
+							floor.scale.y=0.1;
+							floor.scale.z=100;
+							floor.position.setFromMatrixPosition( reticle.matrix );
+							scene.add(floor);
+							*/
+						
+						}
+						c+=1;
+					}
+				}
+
+				controller = renderer.xr.getController( 0 );
+				controller.addEventListener( 'select', onSelect );
+				scene.add( controller );
+
+				reticle = new THREE.Mesh(
+					new THREE.RingGeometry( 0.15, 0.2, 32 ).rotateX( - Math.PI / 2 ),
+					new THREE.MeshBasicMaterial()
+				);
+				reticle.matrixAutoUpdate = false;
+				reticle.visible = false;
+				scene.add( reticle );
+
+				window.addEventListener( 'resize', onWindowResize );
+
+
+				renderer.domElement.addEventListener('touchstart', function(e){
+					e.preventDefault();
+					touchDown=true;
+					touchX = e.touches[0].pageX;
+					touchY = e.touches[0].pageY;
+				}, false);
+
+				renderer.domElement.addEventListener('touchend', function(e){
+					e.preventDefault();
+					touchDown = false;
+				}, false);
+
+				renderer.domElement.addEventListener('touchmove', function(e){
+					e.preventDefault();
+					
+					if(!touchDown){
+						return;
+					}
+
+					deltaX = e.touches[0].pageX - touchX;
+					deltaY = e.touches[0].pageY - touchY;
+					touchX = e.touches[0].pageX;
+					touchY = e.touches[0].pageY;
+
+					rotateObject();
+
+				}, false);
+
+			}
+
+			var touchDown, touchX, touchY, deltaX, deltaY;
+
+			function rotateObject(){
+				if(obj && reticle.visible){
+					obj.rotation.y += deltaX / 100;
+				}
+			}
+
+				animate();
+
+
+			function onWindowResize() {
+
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				//render();
+			}
+
+			function animate() {
+
+				requestAnimationFrame( animate );
+				renderer.setAnimationLoop( render );
+
+
+			}
+
+			function render( timestamp, frame ) {
+
+				if ( frame ) {
+
+					const referenceSpace = renderer.xr.getReferenceSpace();
+					const session = renderer.xr.getSession();
+
+					if ( hitTestSourceRequested === false ) {
+
+						session.requestReferenceSpace( 'viewer' ).then( function ( referenceSpace ) {
+
+							session.requestHitTestSource( { space: referenceSpace } ).then( function ( source ) {
+
+								hitTestSource = source;
+
+							} );
+
+						} );
+
+						session.addEventListener( 'end', function () {
+
+							hitTestSourceRequested = false;
+							hitTestSource = null;
+
+						} );
+
+						hitTestSourceRequested = true;
+
+					}
+
+					if ( hitTestSource ) {
+
+						const hitTestResults = frame.getHitTestResults( hitTestSource );
+
+						if ( hitTestResults.length ) {
+
+							const hit = hitTestResults[ 0 ];
+
+							reticle.visible = true;
+							reticle.matrix.fromArray( hit.getPose( referenceSpace ).transform.matrix );
+
+						} else {
+
+							reticle.visible = false;
+
+						}
+
+					}
+
+				}
+				renderer.render( scene, camera );
+			}
+
+		</script>
+	</body>
+</html>
