@@ -5,13 +5,14 @@
 		
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 		<script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-analytics.js"></script>
 
 		<style>
-			
+
 			.intro{
 				text-align:center;
 				border-style: solid;
@@ -29,7 +30,6 @@
 
 			  color: #444;
 			  cursor: pointer;
-			  margin: auto;
 			  margin-left: 10px;
 			  padding:18px;
 			  width: 100%;
@@ -46,18 +46,18 @@
 
 			/* Style the collapsible content. Note: hidden by default */
 			.content {
-			  padding: 0 18px;
+			  padding: 0 10px;
 			  display: none;
 			  overflow: hidden;
 			  width:100%;
-			  height:50%;
+			  height:25%;
 			  margin:auto;
 			  background-color: #f1f1f1;
-			  font-size: 25px;
+			  font-size: 15px;
 			}
 			.loading{
 				margin:auto;
-				padding-left:150px;
+				padding-left:135px;
 			}
 			
 }
@@ -67,20 +67,20 @@
 	</head>
 	<body>
 		
-		<div id="info">
+		<div id="info" class="info">
 			<div class='intro'>
 				<p><h2>Find a horizontal plane surface and tap on the screen when you see a white circle. Enjoy!!!</h2></p>
 			</div>
 			</br></br>
 			<img src='./aricon.png' height='100' width='100' class='centerimg'>	
 		</div>
-            
+        
         <div id='div' style='position: fixed;'>
 			</br></br>
 			<button type="button" id="collapsible" class="collapsible">ARVANTAGE</button>
 			<div class="content">
-				<p id='assetinfo'>Product : </p></br>
-				<p id='assetinfo'>Color : </p></br>
+				<p id='assetinfo'>Product : </p>
+				<p id='assetinfo'>Color : </p>
 				<button id='one' class='extrathumbnail'></button>
 				<button type='img' id='two' class='extrathumbnail' src='' height='150' width='150'>
 			</div>
@@ -118,15 +118,15 @@
 
 
 			var firebaseConfig = {
-				apiKey: "AIzaSyDJecdvv4l-AIl7du5YpPy-RnoSJcRHOtU",
-				authDomain: "hello-world-2f407.firebaseapp.com",
-				databaseURL: "https://hello-world-2f407.firebaseio.com",
-				projectId: "hello-world-2f407",
-				storageBucket: "hello-world-2f407.appspot.com",
-				messagingSenderId: "494069966463",
-				appId: "1:494069966463:web:838651b9443a334cfe014a",
-				measurementId: "G-YMCEW9C328"
-		        };
+                apiKey: "AIzaSyDJecdvv4l-AIl7du5YpPy-RnoSJcRHOtU",
+                authDomain: "hello-world-2f407.firebaseapp.com",
+                databaseURL: "https://hello-world-2f407.firebaseio.com",
+                projectId: "hello-world-2f407",
+                storageBucket: "hello-world-2f407.appspot.com",
+                messagingSenderId: "494069966463",
+                appId: "1:494069966463:web:838651b9443a334cfe014a",
+                measurementId: "G-YMCEW9C328"
+            };
             // Initialize Firebase
             firebase.initializeApp(firebaseConfig);
             firebase.analytics();
@@ -182,13 +182,13 @@
 			import * as THREE from './build/three.module.js';
 			import { ARButton } from './jsm/webxr/ARButton.js';
 			import { OrbitControls } from './jsm/controls/OrbitControls.js';
-			//import { DragControls } from './jsm/controls/DragControls.js';
+			import { DragControls } from './jsm/controls/DragControls.js';
 			import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
 			
 			let container;var clicksone=0;var clickstwo=0;
 			let camera, scene, renderer, controls, dragcontrols;
 			let controller;
-			var obj;
+			var obj=[];
 			let composer;
 			
 			var infobutton;var divObj;var loadinggif;
@@ -240,7 +240,8 @@
 				controls.enableDamping = true;
 				controls.dampingFactor = 0.05;
 				
-
+				dragcontrols = new DragControls( obj, camera, renderer.domElement );
+				dragcontrols.addEventListener( 'drag', render );
 
 				let options={
 					requiredFeatures:['hit-test'],
@@ -252,15 +253,15 @@
 
 
 				function onSelect() {
-					
+					if(c==0){
 						if (reticle.visible){
-
+							console.log(typeof ojb);
 							const loader = new GLTFLoader();
 							loader.crossOrigin='true';
 							console.log(asset_name);
 							//console.log(id);
 							// Load a glTF resource
-							loadinggif=document.createElement('image');
+							//loadinggif=document.createElement('image');
 							document.getElementById('loading').src='./loading.gif';
 							const planeGeometry = new THREE.PlaneGeometry(2000, 2000);
 							planeGeometry.rotateX(-Math.PI / 2);
@@ -305,13 +306,25 @@
 									});
 		
 									scene.add(obj);
-
+									scene.remove(reticle);
 									var box = new THREE.Box3();
 									box.setFromObject(obj);
 									box.center(controls.target);
 
 									controls.update();
 									render();
+
+									//controls.update();
+									//render();
+
+									//for multiple obj part
+									/*if(obj.length>3){
+										console.log("removing")
+										scene.remove(obj[obj.length - 1]);
+										obj.pop();
+										c--;
+										animate();
+									}*/
 
 									loadinggif=document.getElementById('loading');
 									loadinggif.remove();
@@ -330,8 +343,6 @@
 											if (node.isMesh) {
 												
 												if(node.name==changeMat){
-													//var color1=node.material.color;
-													//console.log(color1);
 													if(clicksone%2==0){
 														node.material.color.setHex(originalCol);
 													}
@@ -350,8 +361,6 @@
 											if (node.isMesh) {
 												
 												if(node.name==changeMat){
-													//var color1=node.material.color;
-													//console.log(color1);
 													if(clickstwo%2==0){
 														node.material.color.setHex(originalCol);
 													}
@@ -362,14 +371,18 @@
 											}
 										});
 									}
+									//c++;//for multiple objs part
+									
 
 								}
 								
 							);
+
 							
 						}
 						c+=1;
-					
+			
+					}
 				}
 
 				controller = renderer.xr.getController( 0 );
@@ -385,7 +398,6 @@
 				scene.add( reticle );
 
 				window.addEventListener( 'resize', onWindowResize, false );
-
 
 				renderer.domElement.addEventListener('touchstart', function(e){
 					e.preventDefault();
@@ -414,19 +426,15 @@
 					rotateObject();
 
 				}, false);
-
 			}
 
 			var touchDown, touchX, touchY, deltaX, deltaY;
 
 			function rotateObject(){
-				if(obj && reticle.visible){
-					obj.rotation.y += deltaX / 100;
+				if(current_object && reticle.visible){
+					current_object.rotation.y += deltaX / 100;
 				}
 			}
-
-				
-
 
 			function onWindowResize() {
 
@@ -466,6 +474,10 @@
 
 							hitTestSourceRequested = false;
 							hitTestSource = null;
+
+							var box = new THREE.Box3();
+							box.setFromObject(obj);
+							box.getCenter(controls.target);
 
 						} );
 
