@@ -540,9 +540,9 @@
 			const elem = document.querySelector('#screenshot');
 			const canvas = renderer.domElement;
 			elem.addEventListener('click', () => {
-			canvas.toBlob((blob) => {
-				saveBlob(blob, `screencapture-${window.width}x${window.height}.png`);
-			});
+				canvas.toBlob((blob) => {
+					saveBlob(blob, `screencapture.png`);
+				});
 			});
 
 			const saveBlob = (function() {
