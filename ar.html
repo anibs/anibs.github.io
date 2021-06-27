@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>WebAR</title>
+		<title>ARVANTAGE</title>
 		
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -28,7 +28,7 @@
 
 			.loading{
 				margin:auto;
-				padding-left:135px;
+				margin-left:50%;
 			}
 
 
@@ -92,8 +92,50 @@
 				padding-left: 20px;
 			}
 
-			
-}
+			.openButton{
+				margin-top:160%;
+			}
+
+			.slidecontainer{
+				margin-left:20%;
+				margin-bottom:100px;
+			}
+	
+			.slider {
+			  -webkit-appearance: none;
+			  width: 50%;
+			  height: 15px;
+			  border-radius: 5px;
+			  background: #d3d3d3;
+			  outline: none;
+			  opacity: 0.7;
+			  -webkit-transition: .2s;
+			  transition: opacity .2s;
+
+			}
+
+			.slider:hover {
+			  opacity: 1;
+			}
+
+			.slider::-webkit-slider-thumb {
+			  -webkit-appearance: none;
+			  appearance: none;
+			  width: 25px;
+			  height: 25px;
+			  border-radius: 50%;
+			  background: #04AA6D;
+			  cursor: pointer;
+			}
+
+			.slider::-moz-range-thumb {
+			  width: 25px;
+			  height: 25px;
+			  border-radius: 50%;
+			  background: #04AA6D;
+			  cursor: pointer;
+			}
+
 
 		</style>
 
@@ -103,7 +145,6 @@
 		<div id='div' style='position: fixed;'>
 			</br></br>
 			<img id='loading' class="loading" height='50' width='50'>
-			<button id="screenshot" type="button">Save...</button>
 			
 			<div id="mySidenav" class="sidenav">
 				<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
@@ -113,14 +154,14 @@
 				<button type='img' id='two' class='extrathumbnail' src='' height='150' width='150'>
 			</div>
 			<div class='openButton'>
-			<span  onclick="openNav()">&#9776; open</span>
+				<span  onclick="openNav()">&#9776; </span>
 			</div>
-			
-		
+
 		</div>
 		
-
+		
 		<script>
+			//OPTION MENU
 			function openNav() {
 			  document.getElementById("mySidenav").style.width = "250px";
 			}
@@ -129,16 +170,18 @@
 			  document.getElementById("mySidenav").style.width = "0";
 			}
 
+			var slider = document.getElementById("myRange");
+			var output = document.getElementById("demo");
+			output.innerHTML = slider.value;
 
-			
-
+			slider.oninput = function() {
+			  output.innerHTML = this.value;
+			}
 
 		</script>
 
-
 		<script type="module">
 
-			//var id=0;
 			var location_name='';
 			
 			location_name=location.search;
@@ -173,40 +216,21 @@
 			
 
 			db.collection('assets').get().then((snapshot)=>{
-				//console.log(snapshot.docs);
 				console.log(snapshot.docs.length);
 				snapshot.docs.forEach(doc=>{
-					//console.log(doc.data().files[0]);
 					if(asset_name==doc.data().asset_name){
-						
 						glb=doc.data().files[0];
 						if(doc.data().files.length>2){
 							thumbone=doc.data().files[2];
-							//list_thumbnail_one.push(thumbone);
 							thumbtwo=doc.data().files[3]
-							//list_thumbnail_two.push(thumbtwo);
 						}
 						else{
 							thumbone='';
-							//list_thumbnail_one.push(thumbone);
 							thumbtwo='';
-							//list_thumbnail_two.push(thumbtwo);
 						}
-					
 						name=doc.data().asset_name;
-						//list_glbs.push(glb);
-						//list_names.push(name);
-					}
-					
+					}	
 				})
-				
-				/*for(var i=0;i<list_names.length;i++){
-					if(list_names[i]==asset_name){
-						console.log(i);
-						id=i;
-						break;
-					}
-				}*/
 			})
 
 			import * as THREE from './build/three.module.js';
@@ -215,6 +239,8 @@
 			import { DragControls } from './jsm/controls/DragControls.js';
 			import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
 			
+
+			//INITIALIZATIONS
 			let container;var clicksone=0;var clickstwo=0;
 			let camera, scene, renderer, controls, dragcontrols;
 			let controller;
@@ -229,6 +255,8 @@
 			let hitTestSourceRequested = false;
 			var c=0;
 			let spotlight,spotlight2;
+
+			var touchDown, touchX, touchY, deltaX, deltaY;
 			
 			init();
 			animate();			
@@ -242,18 +270,14 @@
 
 				camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
 				
-
+				//LIGHTS
 				const light = new THREE.AmbientLight(0xffffff, 1);
 				light.position.set(10,10,10);
 				const directionalLight = new THREE.DirectionalLight(0xffffff, 4);
 				directionalLight.position.set(10, 100, 10);
-
 				directionalLight.castShadow = true;
-
-				
 				scene.add(light);
 				scene.add(directionalLight);
-
 
 				renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
 
@@ -270,8 +294,6 @@
 				controls.enableDamping = true;
 				controls.dampingFactor = 0.05;
 				
-				dragcontrols = new DragControls( obj, camera, renderer.domElement );
-				dragcontrols.addEventListener( 'drag', render );
 
 				let options={
 					requiredFeatures:['hit-test'],
@@ -285,14 +307,9 @@
 				function onSelect() {
 					if(c==0){
 						if (reticle.visible){
-							console.log(typeof ojb);
-							const loader = new GLTFLoader();
-							loader.crossOrigin='true';
-							console.log(asset_name);
-							//console.log(id);
-							// Load a glTF resource
-							//loadinggif=document.createElement('image');
-							document.getElementById('loading').src='./loading.gif';
+
+
+							//SHADOW PLANE
 							const planeGeometry = new THREE.PlaneGeometry(2000, 2000);
 							planeGeometry.rotateX(-Math.PI / 2);
 
@@ -304,16 +321,24 @@
 							shadowMesh.position.setFromMatrixPosition( reticle.matrix );
 							shadowMesh.name = 'shadowMesh';
 							shadowMesh.receiveShadow = true;
-							shadowMesh.position.y = -1.85;
+							shadowMesh.position.y = -1.65
+							scene.add(shadowMesh);		
 
-							scene.add(shadowMesh);
+
+							//LOADING GLB FILE
+							console.log(typeof ojb);
+							const loader = new GLTFLoader();
+							loader.crossOrigin='true';
+							console.log(asset_name);
+							document.getElementById('loading').src='./loading.gif'; //loading animation
+							
 							loader.load(
 
 								String(glb),
 								function ( gltf ) {
 									var count =0 ;
 									obj=gltf.scene;
-									obj.scale.set(0.75, 0.75, 0.75);
+									obj.scale.set(1, 1, 1);
 									obj.rotateY( - Math.PI / 4 ),
 									obj.position.setFromMatrixPosition( reticle.matrix );
 									obj.position.y+=0;
@@ -336,16 +361,13 @@
 									});
 		
 									scene.add(obj);
-									scene.remove(reticle);
 									var box = new THREE.Box3();
 									box.setFromObject(obj);
 									box.getCenter(controls.target);
 
 									controls.update();
 									render();
-
-									//controls.update();
-									//render();
+									scene.remove(reticle);
 
 									//for multiple obj part
 									/*if(obj.length>3){
@@ -364,6 +386,7 @@
 									var imgtwo=document.getElementById('two');
 									imgtwo.innerHTML='<img src='+thumbtwo+' height='+120+' width='+120+'/>';
 									
+									//THUMBNAIL ONE
 									imgone.onclick=function MatOne() {
 										
 										clicksone++;
@@ -383,6 +406,7 @@
 										});
 									}
 									
+									//THUMBNAIL TWO
 									imgtwo.onclick=function MatTwo() {
 										clickstwo++;
 										
@@ -404,35 +428,22 @@
 									
 
 								}
-								
 							);
-
-							
 						}
-						c+=1;
-			
+						c+=1;		
+						
+
+
+
 					}
-				}
 
-				controller = renderer.xr.getController( 0 );
-				controller.addEventListener( 'select', onSelect );
-				scene.add( controller );
-
-				reticle = new THREE.Mesh(
-					new THREE.RingGeometry( 0.15, 0.2, 32 ).rotateX( - Math.PI / 2 ),
-					new THREE.MeshBasicMaterial()
-				);
-				reticle.matrixAutoUpdate = false;
-				reticle.visible = false;
-				scene.add( reticle );
-
-				window.addEventListener( 'resize', onWindowResize, false );
 
 				renderer.domElement.addEventListener('touchstart', function(e){
 					e.preventDefault();
 					touchDown=true;
 					touchX = e.touches[0].pageX;
 					touchY = e.touches[0].pageY;
+					console.log(touchX, touchY);
 				}, false);
 
 				renderer.domElement.addEventListener('touchend', function(e){
@@ -455,13 +466,31 @@
 					rotateObject();
 
 				}, false);
+
+				}
+
+				controller = renderer.xr.getController( 0 );
+				controller.addEventListener( 'select', onSelect );
+				scene.add( controller );
+
+				reticle = new THREE.Mesh(
+					new THREE.RingGeometry( 0.15, 0.2, 32 ).rotateX( - Math.PI / 2 ),
+					new THREE.MeshBasicMaterial()
+				);
+				reticle.matrixAutoUpdate = false;
+				reticle.visible = false;
+				scene.add( reticle );
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+				
 			}
 
-			var touchDown, touchX, touchY, deltaX, deltaY;
+			
 
 			function rotateObject(){
-				if(current_object && reticle.visible){
-					current_object.rotation.y += deltaX / 100;
+				if(obj && reticle.visible){
+					obj.rotation.y += deltaX / 100;
 				}
 			}
 
@@ -470,7 +499,6 @@
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
 				renderer.setSize( window.innerWidth, window.innerHeight );
-				//animate();
 			}
 
 			function animate() {
@@ -536,26 +564,6 @@
 				}
 				renderer.render( scene, camera );
 			}
-
-			const elem = document.querySelector('#screenshot');
-			const canvas = renderer.domElement;
-			elem.addEventListener('click', () => {
-				canvas.toBlob((blob) => {
-					saveBlob(blob, `screencapture.png`);
-				});
-			});
-
-			const saveBlob = (function() {
-			const a = document.createElement('a');
-			document.body.appendChild(a);
-			a.style.display = 'none';
-			return function saveData(blob, fileName) {
-				const url = window.URL.createObjectURL(blob);
-				a.href = url;
-				a.download = fileName;
-				a.click();
-			};
-			}());
 
 		</script>
 	</body>
