@@ -491,6 +491,9 @@
 			function rotateObject(){
 				if(obj && reticle.visible){
 					obj.rotation.y += deltaX / 100;
+					obj.scale.x+= deltaY / 10;
+					obj.scale.y+= deltaY / 10;
+					obj.scale.z+= deltaY / 10;
 				}
 			}
 
