@@ -170,13 +170,7 @@
 			  document.getElementById("mySidenav").style.width = "0";
 			}
 
-			var slider = document.getElementById("myRange");
-			var output = document.getElementById("demo");
-			output.innerHTML = slider.value;
 
-			slider.oninput = function() {
-			  output.innerHTML = this.value;
-			}
 
 		</script>
 
@@ -338,7 +332,7 @@
 								function ( gltf ) {
 									var count =0 ;
 									obj=gltf.scene;
-									obj.scale.set(1, 1, 1);
+									obj.scale.set(0.75, 0.75, 0.75);
 									obj.rotateY( - Math.PI / 4 ),
 									obj.position.setFromMatrixPosition( reticle.matrix );
 									obj.position.y+=0;
@@ -490,10 +484,14 @@
 
 			function rotateObject(){
 				if(obj && reticle.visible){
-					obj.rotation.y += deltaX / 100;
-					obj.scale.x+= deltaY / 10;
-					obj.scale.y+= deltaY / 10;
-					obj.scale.z+= deltaY / 10;
+					if(deltaX>deltaY){
+						obj.rotation.y += deltaX / 100;
+					}
+					else{
+						obj.scale.x+= deltaY / 100;
+						obj.scale.y+= deltaY / 100;
+						obj.scale.z+= deltaY / 100;
+					}
 				}
 			}
 
