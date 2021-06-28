@@ -485,14 +485,12 @@
 			function rotateObject(){
 				console.log(deltaX, deltaY);
 				if(obj && reticle.visible){
-					if(abs(deltaX)>abs(deltaY)){
+					if(Math.abs(deltaX)>Math.abs(deltaY)){
 						obj.rotation.y += deltaX / 100;
 					}
 					else{
 						
 						obj.position.y+=deltaY/100;
-						
-						
 					}
 				}
 			}
