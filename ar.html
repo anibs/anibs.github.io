@@ -488,12 +488,13 @@
 					if(Math.abs(deltaX)>Math.abs(deltaY)){
 						obj.rotation.y += deltaX / 100;
 					}
-					else{
-						
+					else if(Math.abs(deltaX)-Math.abs(deltaY)<20){
 						obj.scale.x+= deltaY / 100;
 						obj.scale.y+= deltaY / 100;
 						obj.scale.z+= deltaY / 100;
-						
+					}
+					else if(Math.abs(Math.abs(deltaX)-Math.abs(deltaY))<10){
+						obj.position.z+=deltaY/100;
 					}
 				}
 			}
