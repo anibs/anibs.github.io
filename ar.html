@@ -315,7 +315,7 @@
 							shadowMesh.position.setFromMatrixPosition( reticle.matrix );
 							shadowMesh.name = 'shadowMesh';
 							shadowMesh.receiveShadow = true;
-							shadowMesh.position.y = -1.0;
+							shadowMesh.position.y = -1.65
 							scene.add(shadowMesh);		
 
 
@@ -485,16 +485,14 @@
 			function rotateObject(){
 				console.log(deltaX, deltaY);
 				if(obj && reticle.visible){
-					if(Math.abs(deltaX)>Math.abs(deltaY)){
+					if(abs(deltaX)>abs(deltaY)){
 						obj.rotation.y += deltaX / 100;
 					}
-					else if(Math.abs(deltaX)-Math.abs(deltaY)<20){
-						obj.scale.x+= deltaY / 100;
-						obj.scale.y+= deltaY / 100;
-						obj.scale.z+= deltaY / 100;
-					}
-					else if(Math.abs(Math.abs(deltaX)-Math.abs(deltaY))<15){
-						obj.position.z+=deltaY/100;
+					else{
+						
+						obj.position.y+=deltaY/100;
+						
+						
 					}
 				}
 			}
