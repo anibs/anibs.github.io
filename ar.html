@@ -27,18 +27,14 @@
 
 
 			.loading{
-				top:50%;
-				left:50%;
-				margin-left:300%;
-				margin-top:100%;
-				
+				margin:auto;
+				margin-left:50%;
 			}
 
 
 			body {
 			  font-family: "Lato", sans-serif;
 			  color:"white";
-			  background-color: #008080;
 			}
 
 			.sidenav {
@@ -52,7 +48,7 @@
 			  overflow-x: hidden;
 			  transition: 0.5s;
 			  padding-top: 60px;
-			  border-radius:25px;
+
 			}
 
 			.sidenav a {
@@ -83,10 +79,8 @@
 
 			.openButton{
 				font-size:30px;cursor:pointer;
-				margin-left:20px;
-				margin-top:-120px;
-				
-
+				margin-left:5px;
+				margin-top:5px;
 			}
 
 			.asset_info{
@@ -96,6 +90,10 @@
 				
 			.extrathumbnail{
 				padding-left: 20px;
+			}
+
+			.openButton{
+				margin-top:160%;
 			}
 
 			.slidecontainer{
@@ -156,7 +154,7 @@
 				<button type='img' id='two' class='extrathumbnail' src='' height='150' width='150'>
 			</div>
 			<div class='openButton'>
-				<span  onclick="openNav()" style='color:white;'>&#9776; </span>
+				<span  onclick="openNav()">&#9776; </span>
 			</div>
 
 		</div>
@@ -326,7 +324,7 @@
 							const loader = new GLTFLoader();
 							loader.crossOrigin='true';
 							console.log(asset_name);
-							document.getElementById('loading').src='./loading6.gif'; //loading animation
+							document.getElementById('loading').src='./loading.gif'; //loading animation
 							
 							loader.load(
 
