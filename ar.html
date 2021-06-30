@@ -400,19 +400,6 @@
 
 					}
 
-					console.log(typeof renderer.domElement);
-					/*var pz = new PinchZoom.default(renderer.domElement, {
-						draggableUnzoomed: false,
-						minZoom: 1,
-						onZoomStart: function(obj, event){
-							// Do something on zoom start
-							// You can use any Pinchzoom method by calling object.method()
-						},
-						onZoomEnd: function(obj, event){
-							// Do something on zoom end
-						}
-					})
-					*/
 					renderer.domElement.addEventListener('touchstart', function(e){
 						e.preventDefault();
 						touchDown=true;
