@@ -27,18 +27,14 @@
 
 
 			.loading{
-				position: fixed;
-				top: 50%;
-				left: 50%;
-				margin-right: -50%;
-				transform: translate(-50%, -50%);
+				margin:auto;
+				margin-left:50%;
 			}
 
 
 			body {
 			  font-family: "Lato", sans-serif;
 			  color:"white";
-			  background-color:#008080;
 			}
 
 			.sidenav {
@@ -52,7 +48,7 @@
 			  overflow-x: hidden;
 			  transition: 0.5s;
 			  padding-top: 60px;
-			  border-radius: 25px;
+
 			}
 
 			.sidenav a {
@@ -83,9 +79,8 @@
 
 			.openButton{
 				font-size:30px;cursor:pointer;
-				left:10px;
-				top:-1px;
-				margin-left:50%;
+				margin-left:5px;
+				margin-top:5px;
 			}
 
 			.asset_info{
@@ -96,6 +91,51 @@
 			.extrathumbnail{
 				padding-left: 20px;
 			}
+
+			.openButton{
+				margin-top:160%;
+			}
+
+			.slidecontainer{
+				margin-left:20%;
+				margin-bottom:100px;
+			}
+	
+			.slider {
+			  -webkit-appearance: none;
+			  width: 50%;
+			  height: 15px;
+			  border-radius: 5px;
+			  background: #d3d3d3;
+			  outline: none;
+			  opacity: 0.7;
+			  -webkit-transition: .2s;
+			  transition: opacity .2s;
+
+			}
+
+			.slider:hover {
+			  opacity: 1;
+			}
+
+			.slider::-webkit-slider-thumb {
+			  -webkit-appearance: none;
+			  appearance: none;
+			  width: 25px;
+			  height: 25px;
+			  border-radius: 50%;
+			  background: #04AA6D;
+			  cursor: pointer;
+			}
+
+			.slider::-moz-range-thumb {
+			  width: 25px;
+			  height: 25px;
+			  border-radius: 50%;
+			  background: #04AA6D;
+			  cursor: pointer;
+			}
+
 
 		</style>
 
@@ -109,12 +149,12 @@
 			<div id="mySidenav" class="sidenav">
 				<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
 				<p id='assetinfo' class='asset_info' style='color:white;'>Product : </p>
-				<p id='asset_info2' class='asset_info2' style='color:white'>Colors : </p>
-				<p class='asset_info'><button type='img' id='one' class='extrathumbnail' style:'position: fixed; '></button></p>
-				<p class='asset_info'><button type='img' id='two' class='extrathumbnail' style:'position: fixed; '></button></p>
+				<button id='one' class='extrathumbnail'></button>
+				</br></br>
+				<button type='img' id='two' class='extrathumbnail' src='' height='150' width='150'>
 			</div>
 			<div class='openButton'>
-				<span id='openButtonIcon' onclick="openNav()" style='border-style:solid; border-color:#008080; color:#008080'>&#9776; </span>
+				<span  onclick="openNav()">&#9776; </span>
 			</div>
 
 		</div>
@@ -284,7 +324,7 @@
 							const loader = new GLTFLoader();
 							loader.crossOrigin='true';
 							console.log(asset_name);
-							document.getElementById('loading').src='./loading6.gif'; //loading animation
+							document.getElementById('loading').src='./loading.gif'; //loading animation
 							
 							loader.load(
 
@@ -323,9 +363,15 @@
 									render();
 									scene.remove(reticle);
 
-									openButton=document.getElementById('openButtonIcon');
-									openButton.style.color="white";
-									openButton.style.borderColor="white";
+									//for multiple obj part
+									/*if(obj.length>3){
+										console.log("removing")
+										scene.remove(obj[obj.length - 1]);
+										obj.pop();
+										c--;
+										animate();
+									}*/
+
 									loadinggif=document.getElementById('loading');
 									loadinggif.remove();
 									var asset_nameele=document.getElementById('assetinfo').textContent+=asset_name;
