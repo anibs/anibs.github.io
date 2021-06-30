@@ -102,7 +102,7 @@
 	</head>
 	<body>
 		
-		<div id='div' style='position: absolute;'>
+		<div id='div' style='position: fixed;'>
 			</br></br>
 			<img id='loading' class="loading" height='50' width='50'>
 			
@@ -323,14 +323,6 @@
 									render();
 									scene.remove(reticle);
 
-									//for multiple obj part
-									/*if(obj.length>3){
-										console.log("removing")
-										scene.remove(obj[obj.length - 1]);
-										obj.pop();
-										c--;
-										animate();
-									}*/
 									openButton=document.getElementById('openButtonIcon');
 									openButton.style.color="white";
 									openButton.style.borderColor="white";
