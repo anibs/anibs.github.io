@@ -28,13 +28,15 @@
 
 			.loading{
 				margin:auto;
-				margin-left:50%;
+				margin-left:45%;
+				margin-top:50%;
 			}
 
 
 			body {
 			  font-family: "Lato", sans-serif;
 			  color:"white";
+			  background-color:#008080;
 			}
 
 			.sidenav {
@@ -42,13 +44,13 @@
 			  width: 0;
 			  position: fixed;
 			  z-index: 1;
-			  top: 0;
-			  left: 0;
+			  top: 10px;
+			  left: 10px;
 			  background-color: #BFBFBF;
 			  overflow-x: hidden;
 			  transition: 0.5s;
 			  padding-top: 60px;
-
+			  border-radius: 25px;
 			}
 
 			.sidenav a {
@@ -78,9 +80,10 @@
 			}
 
 			.openButton{
+				
 				font-size:30px;cursor:pointer;
-				margin-left:5px;
-				margin-top:5px;
+				margin-left:10%;
+				margin-top:120%;
 			}
 
 			.asset_info{
@@ -92,9 +95,7 @@
 				padding-left: 20px;
 			}
 
-			.openButton{
-				margin-top:160%;
-			}
+
 
 			.slidecontainer{
 				margin-left:20%;
@@ -136,6 +137,11 @@
 			  cursor: pointer;
 			}
 
+			.buttons{
+				left:10px;
+				
+			}
+
 
 		</style>
 
@@ -149,12 +155,11 @@
 			<div id="mySidenav" class="sidenav">
 				<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
 				<p id='assetinfo' class='asset_info' style='color:white;'>Product : </p>
-				<button id='one' class='extrathumbnail'></button>
-				</br></br>
-				<button type='img' id='two' class='extrathumbnail' src='' height='150' width='150'>
+				<p class='buttons'><button type='img' id='one' class='extrathumbnail' height='150' width='150'></button></p>
+				<p class='buttons'><button type='img' id='two' class='extrathumbnail' height='150' width='150'></button></p>
 			</div>
 			<div class='openButton'>
-				<span  onclick="openNav()">&#9776; </span>
+				<span id='openButtonIcon' onclick="openNav()" style='color:#008080; border-style: solid; border-color:#008080;'>&#9776; </span>
 			</div>
 
 		</div>
@@ -241,7 +246,7 @@
 			var obj=[];
 			let composer;
 			
-			var infobutton;var divObj;var loadinggif;
+			var infobutton;var divObj;var loadinggif;var openButtonIcon;
 
 			let reticle;
 			var changeMat, originalCol;
@@ -324,7 +329,7 @@
 							const loader = new GLTFLoader();
 							loader.crossOrigin='true';
 							console.log(asset_name);
-							document.getElementById('loading').src='./loading6.gif'; //loading animation
+							document.getElementById('loading').src='./loading5.gif'; //loading animation
 							
 							loader.load(
 
@@ -372,6 +377,9 @@
 										animate();
 									}*/
 
+									openButtonIcon=document.getElementById('openButtonIcon');
+									openButtonIcon.style.color="white";
+									openButtonIcon.style.borderColor="white";
 									loadinggif=document.getElementById('loading');
 									loadinggif.remove();
 									var asset_nameele=document.getElementById('assetinfo').textContent+=asset_name;
