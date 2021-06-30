@@ -4,8 +4,7 @@
 		<title>ARVANTAGE</title>
 		
 		<meta charset="utf-8">
-		 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-	
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 		<script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
@@ -28,11 +27,8 @@
 
 
 			.loading{
-				position: fixed;
-				top: 50%;
-				left: 50%;
-				margin-right: -50%;
-				transform: translate(-50%, -50%);
+				margin:auto;
+				margin-left:50%;
 			}
 
 
@@ -47,18 +43,17 @@
 			  width: 0;
 			  position: fixed;
 			  z-index: 1;
-			  top: 10px;
-			  left: 10px;
+			  top: 0;
+			  left: 0;
 			  background-color: #BFBFBF;
 			  overflow-x: hidden;
 			  transition: 0.5s;
-			  padding-top: 4%;
-			  border-radius: 25px;
+			  padding-top: 60px;
+
 			}
 
 			.sidenav a {
 			  padding: 8px 8px 8px 32px;
-			  margin:auto;
 			  text-decoration: none;
 			  font-size: 25px;
 			  color: #818181;
@@ -85,25 +80,62 @@
 
 			.openButton{
 				font-size:30px;cursor:pointer;
-				left:1px;
-				top:-1px;
-				margin-left:50%;
+				margin-left:5px;
+				margin-top:5px;
 			}
 
 			.asset_info{
 				font-size:20px;
 				padding-left:10px;
 			}
-
-			.asset_info2{
-				font-size:20px;
-				padding-left:10px;
-			}
 				
 			.extrathumbnail{
-				padding-left:10px;	
+				padding-left: 20px;
 			}
 
+			.openButton{
+				margin-top:160%;
+			}
+
+			.slidecontainer{
+				margin-left:20%;
+				margin-bottom:100px;
+			}
+	
+			.slider {
+			  -webkit-appearance: none;
+			  width: 50%;
+			  height: 15px;
+			  border-radius: 5px;
+			  background: #d3d3d3;
+			  outline: none;
+			  opacity: 0.7;
+			  -webkit-transition: .2s;
+			  transition: opacity .2s;
+
+			}
+
+			.slider:hover {
+			  opacity: 1;
+			}
+
+			.slider::-webkit-slider-thumb {
+			  -webkit-appearance: none;
+			  appearance: none;
+			  width: 25px;
+			  height: 25px;
+			  border-radius: 50%;
+			  background: #04AA6D;
+			  cursor: pointer;
+			}
+
+			.slider::-moz-range-thumb {
+			  width: 25px;
+			  height: 25px;
+			  border-radius: 50%;
+			  background: #04AA6D;
+			  cursor: pointer;
+			}
 
 
 		</style>
@@ -111,20 +143,19 @@
 	</head>
 	<body>
 		
-		<div id='div' style='position: absolute;'>
+		<div id='div' style='position: fixed;'>
 			</br></br>
 			<img id='loading' class="loading" height='50' width='50'>
 			
 			<div id="mySidenav" class="sidenav">
 				<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
 				<p id='assetinfo' class='asset_info' style='color:white;'>Product : </p>
-				<p id='asset_info2' class='asset_info2' style='color:white'>Colors : </p>
-				<p class='asset_info'><button type='img' id='one' class='extrathumbnail' style:'position: fixed; '></button></p>
-				<p class='asset_info'><button type='img' id='two' class='extrathumbnail' style:'position: fixed; '></button></p>
-			
+				<button id='one' class='extrathumbnail'></button>
+				</br></br>
+				<button type='img' id='two' class='extrathumbnail' src='' height='150' width='150'>
 			</div>
-			<div  class='openButton' >
-				<span id='openButtonIcon' onclick="openNav()" style='border-style:solid; border-color:#008080; color:#008080'>&#9776; </span>
+			<div class='openButton'>
+				<span  onclick="openNav()">&#9776; </span>
 			</div>
 
 		</div>
@@ -211,7 +242,7 @@
 			var obj=[];
 			let composer;
 			
-			var infobutton;var divObj;var loadinggif;var openButton;
+			var infobutton;var divObj;var loadinggif;
 
 			let reticle;
 			var changeMat, originalCol;
@@ -237,15 +268,11 @@
 				//LIGHTS
 				const light = new THREE.AmbientLight(0xffffff, 1);
 				light.position.set(10,10,10);
-				spotlight =new THREE.SpotLight(0xffffff, 4);
-				spotlight.position.set( 10, 100, 10 );
-				spotlight.castShadow=true;
-				
-				spotlight.shadow.bias=-0.0000001;
-				spotlight.shadow.mapSize.width=1024*1024;
-				spotlight.shadow.mapSize.height=1024*1024;
-				
-				scene.add(spotlight);
+				const directionalLight = new THREE.DirectionalLight(0xffffff, 4);
+				directionalLight.position.set(10, 100, 10);
+				directionalLight.castShadow = true;
+				scene.add(light);
+				scene.add(directionalLight);
 
 				renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
 
@@ -278,18 +305,19 @@
 
 
 							//SHADOW PLANE
-							const floor=new THREE.Mesh(
-								new THREE.BoxGeometry( 0.1, 1, 0.2, 32).translate( 0, 0.1, 0 ),
-								new THREE.ShadowMaterial({ opacity:0.2})
-							);
+							const planeGeometry = new THREE.PlaneGeometry(2000, 2000);
+							planeGeometry.rotateX(-Math.PI / 2);
 
-							floor.receiveShadow = true;
-							floor.scale.x=100;
-							floor.scale.y=0.1;
-							floor.scale.z=100;
-							floor.position.setFromMatrixPosition( reticle.matrix );
-							floor.position.y=-2;
-							scene.add(floor);	
+							const shadowMesh = new THREE.Mesh(planeGeometry, new THREE.ShadowMaterial({
+								color: 0x111111,
+								opacity: 0.3,
+							}));	
+
+							shadowMesh.position.setFromMatrixPosition( reticle.matrix );
+							shadowMesh.name = 'shadowMesh';
+							shadowMesh.receiveShadow = true;
+							shadowMesh.position.y = -1.5;
+							scene.add(shadowMesh);		
 
 
 							//LOADING GLB FILE
@@ -328,8 +356,6 @@
 									});
 		
 									scene.add(obj);
-									
-
 									var box = new THREE.Box3();
 									box.setFromObject(obj);
 									box.getCenter(controls.target);
@@ -338,9 +364,15 @@
 									render();
 									scene.remove(reticle);
 
-									openButton=document.getElementById('openButtonIcon');
-									openButton.style.color="white";
-									openButton.style.borderColor="white";
+									//for multiple obj part
+									/*if(obj.length>3){
+										console.log("removing")
+										scene.remove(obj[obj.length - 1]);
+										obj.pop();
+										c--;
+										animate();
+									}*/
+
 									loadinggif=document.getElementById('loading');
 									loadinggif.remove();
 									var asset_nameele=document.getElementById('assetinfo').textContent+=asset_name;
@@ -400,38 +432,36 @@
 
 					}
 
-					renderer.domElement.addEventListener('touchstart', function(e){
-						e.preventDefault();
-						touchDown=true;
-						touchX = e.touches[0].pageX;
-						touchY = e.touches[0].pageY;
-						console.log(touchX, touchY);
-					}, false);
 
-					renderer.domElement.addEventListener('touchend', function(e){
-						e.preventDefault();
-						touchDown = false;
-					}, false);
+				renderer.domElement.addEventListener('touchstart', function(e){
+					e.preventDefault();
+					touchDown=true;
+					touchX = e.touches[0].pageX;
+					touchY = e.touches[0].pageY;
+					console.log(touchX, touchY);
+				}, false);
 
-					renderer.domElement.addEventListener('touchmove', function(e){
-						e.preventDefault();
+				renderer.domElement.addEventListener('touchend', function(e){
+					e.preventDefault();
+					touchDown = false;
+				}, false);
+
+				renderer.domElement.addEventListener('touchmove', function(e){
+					e.preventDefault();
 					
-						if(!touchDown){
-							return;
-						}
+					if(!touchDown){
+						return;
+					}
 
-						deltaX = e.touches[0].pageX - touchX;
-						deltaY = e.touches[0].pageY - touchY;
-						touchX = e.touches[0].pageX;
-						touchY = e.touches[0].pageY;
+					deltaX = e.touches[0].pageX - touchX;
+					deltaY = e.touches[0].pageY - touchY;
+					touchX = e.touches[0].pageX;
+					touchY = e.touches[0].pageY;
 
+					rotateObject();
 
-						rotateObject();
-						//new PinchZoom.default(obj, {});
+				}, false);
 
-
-					}, false);
-					
 				}
 
 				controller = renderer.xr.getController( 0 );
@@ -456,18 +486,16 @@
 			function rotateObject(){
 				console.log(deltaX, deltaY);
 				if(obj && reticle.visible){
-					if(abs(deltaX)>abs(deltaY)){
+					if(Math.abs(deltaX)>Math.abs(deltaY)){
 						obj.rotation.y += deltaX / 100;
-					
 					}
-					else{						
-						obj.position.y+=deltaY/10;
-						obj.scale.x+=deltaX/10;
-						obj.scale.y+=deltaX/10;
-						obj.scale.z+=deltaX/10;
+					else{
+						obj.position.y+=deltaY/100;
+						obj.scale.x+=deltaX/50;
+						obj.scale.y+=deltaX/50;
+						obj.scale.z+=deltaX/50;
 					}
 				}
-
 			}
 
 			function onWindowResize() {
