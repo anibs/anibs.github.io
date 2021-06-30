@@ -2,6 +2,7 @@
 
 <html>
     <head>
+
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&display=swap" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
@@ -14,11 +15,8 @@
     <style>
 
         body{
-            background-image:url('bg.jpg');
-            background-repeat: repeat; 
-            background-position: center;
-            background-size: cover;
-            padding-left:1px;
+            background-image:url('bg2306.jpg');
+            background-repeat: no-repeat; 
         }      
         
         div.container{
@@ -62,13 +60,16 @@
 
         div.footer {
             font-family: 'Comfortaa', cursive;
+            width: 100%;
             bottom: 1px;
             color:white;
             font-weight: 900;
             padding: 15px;
+            margin: auto;
             background-color:gray;
             border: 5px solid #ccc;
             text-align: center;
+            position:fixed;
         }
 
     </style>
@@ -79,10 +80,12 @@
         <div class="heading">
             <h1><b>Welcome to ARvantage</b></h1>
             <h3>Check out the products with an AR experience </h3>
+            
         </div>
-        </br></br>
-
+        </br></br></br></br></br></br>
+        
         <div id="container" class="container">
+        
         </div>
         <script>
 
@@ -117,7 +120,7 @@
                 var i;
                 var x;
                 for (i=0;i<list_images_src.length;i++) {
-                    x="<a href="+'./ar?id='+list_names[i]+"><div class='gallery'><img src="+list_images_src[i]+" width='600' height='400'></div></a>";
+                    x="<a href="+'./ar?id='+list_names[i]+"><div class='gallery'><img src="+list_images_src[i]+" width='600' height='400' title="+list_names[i]+"></div></a>";
                     document.getElementById("container").innerHTML += x;
                 }                
             })
