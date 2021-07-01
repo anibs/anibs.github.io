@@ -465,7 +465,12 @@
 					touchX = e.touches[0].pageX;
 					touchY = e.touches[0].pageY;
 					
-					rotateObject();
+					if(transformIsClicked%2==1){
+						transformObject();
+					}
+					else{
+						rotateObject();
+					}
 
 				}, false);
 
