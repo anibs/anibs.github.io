@@ -10,7 +10,8 @@
 		<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-analytics.js"></script>
-
+		<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+		<link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
 		<style>
 
 			.intro{
@@ -27,9 +28,11 @@
 
 
 			.loading{
-				margin:auto;
-				margin-left:45%;
-				margin-top:50%;
+				position:fixed;
+				z-index: 1;
+				top: 45%;
+				right: 42%;
+				
 			}
 
 
@@ -82,8 +85,12 @@
 			.openButton{
 				
 				font-size:30px;cursor:pointer;
-				margin-left:10%;
-				margin-top:120%;
+				position :fixed;
+				bottom : 20px;
+				z-index : -1;
+				top:20px;
+				left:20px;	
+
 			}
 
 			.asset_info{
@@ -96,70 +103,41 @@
 			}
 
 
-
-			.slidecontainer{
-				margin-left:20%;
-				margin-bottom:100px;
+			.transformButton{
+				font-size:30px;cursor:pointer;
+				position :fixed;
+				z-index : -1;
+				bottom:20px;
+				right:20px;	
 			}
-	
-			.slider {
-			  -webkit-appearance: none;
-			  width: 50%;
-			  height: 15px;
-			  border-radius: 5px;
-			  background: #d3d3d3;
-			  outline: none;
-			  opacity: 0.7;
-			  -webkit-transition: .2s;
-			  transition: opacity .2s;
-
-			}
-
-			.slider:hover {
-			  opacity: 1;
-			}
-
-			.slider::-webkit-slider-thumb {
-			  -webkit-appearance: none;
-			  appearance: none;
-			  width: 25px;
-			  height: 25px;
-			  border-radius: 50%;
-			  background: #04AA6D;
-			  cursor: pointer;
-			}
-
-			.slider::-moz-range-thumb {
-			  width: 25px;
-			  height: 25px;
-			  border-radius: 50%;
-			  background: #04AA6D;
-			  cursor: pointer;
-			}
+		
 
 			.buttons{
-				left:10px;
-				
+				left:20px;
 			}
 
 
 		</style>
 
 	</head>
-	<body>
+	<body >
 		
 		<div id='div' style='position: fixed;'>
 			</br></br>
-			<img id='loading' class="loading" height='50' width='50'>
+			
+			<img id='loading' class="loading" height='50' width='50' >
 			
 			<div id="mySidenav" class="sidenav">
 				<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
 				<p id='assetinfo' class='asset_info' style='color:white;'>Product : </p>
-				<p class='buttons'><button type='img' id='one' class='extrathumbnail' height='150' width='150'></button></p>
-				<p class='buttons'><button type='img' id='two' class='extrathumbnail' height='150' width='150'></button></p>
+				<p class='asset_info'><button type='img' id='one' class='extrathumbnail' height='150' width='150'></button></p>
+				<p class='asset_info'><button type='img' id='two' class='extrathumbnail' height='150' width='150'></button></p>
 			</div>
 			<div class='openButton'>
-				<span id='openButtonIcon' onclick="openNav()" style='color:#008080; border-style: solid; border-color:#008080;'>&#9776; </span>
+				<span id='openButtonIcon' class="fas fa-info-circle w3-jumbo" onclick="openNav()" style='color:#008080; border-style:solid; border-color:#008080; border-radius:50%;'></span>
+			</div>
+			<div class='transformButton'>
+				<span id='transformButtonIcon' class='fas fa-arrows-alt w3-jumbo' onclick="isTransformEnabled()" style='color:#008080; border-style:solid; border-color:#008080; border-radius:50%;'></span>
 			</div>
 
 		</div>
@@ -174,16 +152,31 @@
 			function closeNav() {
 			  document.getElementById("mySidenav").style.width = "0";
 			}
-
+			//var transformIsClicked=0;
+			function isTransformEnabled(){
+				transformIsClicked++;
+				if(transformIsClicked%2==1){
+					console.log('transform mode');
+					document.getElementById('transformButtonIcon').style.color = "gray";
+					document.getElementById('transformButtonIcon').style.borderColor = "gray";
+				}
+				else{
+					console.log('out of transform mode');
+					document.getElementById('transformButtonIcon').style.color = "white";
+					document.getElementById('transformButtonIcon').style.borderColor = "white";
+				}
+				
+			}
 
 
 		</script>
 
 		<script type="module">
-
-			var location_name='';
 			
+			var location_name='';
+			window.transformIsClicked=0;
 			location_name=location.search;
+			
 			console.log(location_name);
 			var asset_name=location_name.substring(4);
 			console.log(asset_name);
@@ -246,8 +239,8 @@
 			var obj=[];
 			let composer;
 			
-			var infobutton;var divObj;var loadinggif;var openButtonIcon;
-
+			var infobutton;var divObj;var loadinggif;var openButtonIcon;var transformButtonIcon;
+			
 			let reticle;
 			var changeMat, originalCol;
 			let hitTestSource = null;
@@ -298,16 +291,25 @@
 					requiredFeatures:['hit-test'],
 					optionalFeatures:['dom-overlay'],
 				}
+				let options2={
+					requiredFeatures:['dom-overlay'],
+				}
 				options.domOverlay={root:document.getElementById('div')};
+				options2.domOverlay={root:document.getElementById('div')}
 				document.body.appendChild( ARButton.createButton( renderer, options ) );
 
 
-
 				function onSelect() {
+
 					if(c==0){
 						if (reticle.visible){
 
-
+							openButtonIcon=document.getElementById('openButtonIcon');
+							openButtonIcon.style.color="white";
+							openButtonIcon.style.borderColor="white";
+							transformButtonIcon=document.getElementById('transformButtonIcon');
+							transformButtonIcon.style.color="white";
+							transformButtonIcon.style.borderColor="white";
 							//SHADOW PLANE
 							const planeGeometry = new THREE.PlaneGeometry(2000, 2000);
 							planeGeometry.rotateX(-Math.PI / 2);
@@ -329,7 +331,7 @@
 							const loader = new GLTFLoader();
 							loader.crossOrigin='true';
 							console.log(asset_name);
-							document.getElementById('loading').src='./loading5.gif'; //loading animation
+							document.getElementById('loading').src='./loading4.gif'; //loading animation
 							
 							loader.load(
 
@@ -377,9 +379,7 @@
 										animate();
 									}*/
 
-									openButtonIcon=document.getElementById('openButtonIcon');
-									openButtonIcon.style.color="white";
-									openButtonIcon.style.borderColor="white";
+									
 									loadinggif=document.getElementById('loading');
 									loadinggif.remove();
 									var asset_nameele=document.getElementById('assetinfo').textContent+=asset_name;
@@ -388,6 +388,8 @@
 									var imgtwo=document.getElementById('two');
 									imgtwo.innerHTML='<img src='+thumbtwo+' height='+120+' width='+120+'/>';
 									
+									if(transformIsClicked>0){console.log(transformIsClicked);}
+
 									//THUMBNAIL ONE
 									imgone.onclick=function MatOne() {
 										
@@ -464,7 +466,7 @@
 					deltaY = e.touches[0].pageY - touchY;
 					touchX = e.touches[0].pageX;
 					touchY = e.touches[0].pageY;
-
+					
 					rotateObject();
 
 				}, false);
@@ -489,15 +491,30 @@
 			}
 
 			
+			function transformObject(){
+				if(transformIsClicked%2==1){
+						if(obj && reticle.visible){
+						if(Math.abs(deltaX)>Math.abs(deltaY)){
+							obj.position.x += deltaX / 100;
+						}
+						else{
+							obj.position.y += deltaX / 100;
+							obj.position.z+=deltaX/50;
+						}
+					}
+				}
+				
+			}
+			
+
+
 
 			function rotateObject(){
-				console.log(deltaX, deltaY);
 				if(obj && reticle.visible){
 					if(Math.abs(deltaX)>Math.abs(deltaY)){
 						obj.rotation.y += deltaX / 100;
 					}
 					else{
-						obj.position.y+=deltaY/100;
 						obj.scale.x+=deltaX/50;
 						obj.scale.y+=deltaX/50;
 						obj.scale.z+=deltaX/50;
