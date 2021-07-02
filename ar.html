@@ -11,8 +11,7 @@
 		<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-analytics.js"></script>
-		<script src='https://rawgit.com/jeromeetienne/threex.domevents/master/examples/vendor/three.js/build/three.min.js'></script>
-		<script src='https://rawgit.com/jeromeetienne/threex.domevents/master/threex.domevents.js'></script>
+	
 		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 		<link rel="stylesheet" href="./w3.css">
 		<style>
@@ -508,13 +507,6 @@
 
 				window.addEventListener( 'resize', onWindowResize, false );
 				
-
-				const domEvents = new THREEx.DomEvents(camera, renderer.domElement);
-
-                domEvents.addEventListener(obj, 'click', find, true);
-				function find(event){
-					console.log('clicked');
-				}
 			}
 
 			
