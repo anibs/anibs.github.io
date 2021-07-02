@@ -497,15 +497,12 @@
 			function transformObject(){
 				if(transformIsClicked%2==1){
 					if(obj && reticle.visible){
-						if(Math.abs(deltaX)-Math.abs(deltaY)<5.0){
+						if(Math.abs(deltaX)>Math.abs(deltaY)){
 							obj.position.x += deltaX / 100;
 						}
-						else if(Math.abs(deltaY)-Math.abs(deltaX)<5.0){
+						else if(Math.abs(deltaY)>Math.abs(deltaX)){
 							obj.position.y += deltaX / 100;
 							
-						}
-						else{
-							obj.position.z+=deltaX/100;
 						}
 					}
 				}
