@@ -350,7 +350,7 @@
 							
 							loader.load(
 
-								String(glb),
+								'./tyre.glb',
 								function ( gltf ) {
 									var count =0 ;
 									obj=gltf.scene;
@@ -513,16 +513,14 @@
 			function transformObject(){
 				if(transformIsClicked%2==1){
 					if(obj && reticle.visible){
-						if(Math.abs(deltaX)-Math.abs(deltaY)>5.0){
+						if(Math.abs(deltaX)>Math.abs(deltaY)){
 							obj.position.x += deltaX / 100;
 						}
-						else if(Math.abs(deltaY)-Math.abs(deltaX)>5.0){
+						else if(Math.abs(deltaY)>Math.abs(deltaX)){
 							obj.position.y += deltaX / 100;
 							
 						}
-						else if(Math.abs(deltaY)-Math.abs(deltaX)<5.0){
-							obj.position.z+=deltaX/100;
-						}
+
 						else{
 							;
 						}
@@ -537,8 +535,8 @@
 				if(obj && reticle.visible){
 					if(Math.abs(deltaX)>Math.abs(deltaY)){
 						obj.rotation.y += deltaX / 100;
-						obj.rotation.x += deltaY / 100;
-						obj.rotation.z += deltaY / 100;
+						//obj.rotation.x += deltaY / 100;
+						//obj.rotation.z += deltaY / 100;
 					}
 					else{
 						obj.scale.x+=deltaX/50;
