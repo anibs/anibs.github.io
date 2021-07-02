@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -10,6 +11,8 @@
 		<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-analytics.js"></script>
+		<script src='https://rawgit.com/jeromeetienne/threex.domevents/master/examples/vendor/three.js/build/three.min.js'></script>
+		<script src='https://rawgit.com/jeromeetienne/threex.domevents/master/threex.domevents.js'></script>
 		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 		<link rel="stylesheet" href="./w3.css">
 		<style>
@@ -97,8 +100,16 @@
 				padding-left:10px;
 			}
 				
-			.extrathumbnail{
-				padding-left: 20px;
+			.extrathumbnail{	
+				margin-right:16px;
+				border: 3px solid black;
+				font-size:15px;
+			}
+
+
+			.sideNavButtons{	
+				margin-right:16px;
+				border: 1px solid black;
 			}
 
 
@@ -128,8 +139,15 @@
 			<div id="mySidenav" class="sidenav">
 				<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
 				<p id='assetinfo' class='asset_info' style='color:white;'>Product : </p>
-				<p class='asset_info'><button type='img' id='one' class='extrathumbnail' height='150' width='150'></button></p>
-				<p class='asset_info'><button type='img' id='two' class='extrathumbnail' height='150' width='150'></button></p>
+				<p id='assetinfo' class='asset_info' style='color:white;'>Available Colors : </p>
+				<p class='asset_info'><button type='img' id='one' class='extrathumbnail' height='150' width='150'></button><button type='img' id='two' class='extrathumbnail' height='150' width='150'></button></p>
+				<p class='asset_info' style='font-size:15px;'><button class='sideNavButtons' style='border-radius:25px;'>ADD TO WISHLIST</button></p>
+				<p id='assetinfo' class='asset_info' style='color:white;'>For a great experience you can do the following</p>
+				<ul>
+					<li style='font-size:15px;'>Swipe horizontally to rotate the Object around</li>
+					<li style='font-size:15px;'>Swipe vertically to scale the Object</li>
+					<li style='font-size:15px;'>On clicking the transform button you enter transform mode where you can place the object anywhere you like</li>
+				</ul>
 			</div>
 			<div class='openButton'>
 				<span id='openButtonIcon' class="material-icons w3-jumbo" onclick="openNav()" style='color:#008080; border-style:solid; border-color:#008080; border-radius:50%;'>info</span>
@@ -144,7 +162,7 @@
 		<script>
 			//OPTION MENU
 			function openNav() {
-			  document.getElementById("mySidenav").style.width = "250px";
+			  document.getElementById("mySidenav").style.width = "75%";
 			}
 
 			function closeNav() {
@@ -228,7 +246,6 @@
 			import { OrbitControls } from './jsm/controls/OrbitControls.js';
 			import { DragControls } from './jsm/controls/DragControls.js';
 			import { GLTFLoader } from './jsm/loaders/GLTFLoader.js';
-			
 
 			//INITIALIZATIONS
 			let container;var clicksone=0;var clickstwo=0;
@@ -284,6 +301,7 @@
 				controls.enableDamping = true;
 				controls.dampingFactor = 0.05;
 				
+				
 
 				let options={
 					requiredFeatures:['hit-test'],
@@ -333,7 +351,7 @@
 							
 							loader.load(
 
-								String(glb),
+								'./tyre.glb',
 								function ( gltf ) {
 									var count =0 ;
 									obj=gltf.scene;
@@ -368,16 +386,6 @@
 									render();
 									scene.remove(reticle);
 
-									//for multiple obj part
-									/*if(obj.length>3){
-										console.log("removing")
-										scene.remove(obj[obj.length - 1]);
-										obj.pop();
-										c--;
-										animate();
-									}*/
-
-									
 									loadinggif=document.getElementById('loading');
 									loadinggif.remove();
 									var asset_nameele=document.getElementById('assetinfo').textContent+=asset_name;
@@ -399,9 +407,16 @@
 												if(node.name==changeMat){
 													if(clicksone%2==0){
 														node.material.color.setHex(originalCol);
+														imgone.style.borderColor='black';
+
 													}
 													else{
 														node.material.color.setHex(0xff4500);
+														imgone.style.borderColor='aqua';
+														/*const texture = new THREE.TextureLoader().load( './bg1.jpg' );
+														const material = new THREE.MeshBasicMaterial( { map: texture } );
+														node.material=material;
+														*/
 													}
 												}
 											}
@@ -418,9 +433,11 @@
 												if(node.name==changeMat){
 													if(clickstwo%2==0){
 														node.material.color.setHex(originalCol);
+														imgtwo.style.borderColor='black';
 													}
 													else{
 														node.material.color.setHex(0xffff00);
+														imgtwo.style.borderColor='aqua';
 													}
 												}
 											}
@@ -471,6 +488,7 @@
 					else{
 						rotateObject();
 					}
+					
 
 				}, false);
 
@@ -489,33 +507,46 @@
 				scene.add( reticle );
 
 				window.addEventListener( 'resize', onWindowResize, false );
-
 				
+
+				const domEvents = new THREEx.DomEvents(camera, renderer.domElement);
+
+                domEvents.addEventListener(obj, 'click', find, true);
+				function find(event){
+					console.log('clicked');
+				}
 			}
 
 			
 			function transformObject(){
 				if(transformIsClicked%2==1){
 					if(obj && reticle.visible){
-						if(Math.abs(deltaX)>Math.abs(deltaY)){
+						if(Math.abs(deltaX)-Math.abs(deltaY)>5.0){
 							obj.position.x += deltaX / 100;
 						}
-						else if(Math.abs(deltaY)>Math.abs(deltaX)){
+						else if(Math.abs(deltaY)-Math.abs(deltaX)>5.0){
 							obj.position.y += deltaX / 100;
 							
+						}
+						else if(Math.abs(deltaY)-Math.abs(deltaX)<5.0){
+							obj.position.z+=deltaX/100;
+						}
+						else{
+							;
 						}
 					}
 				}
 				
 			}
 			
-
-
+			
 
 			function rotateObject(){
 				if(obj && reticle.visible){
 					if(Math.abs(deltaX)>Math.abs(deltaY)){
 						obj.rotation.y += deltaX / 100;
+						obj.rotation.x += deltaY / 100;
+						obj.rotation.z += deltaY / 100;
 					}
 					else{
 						obj.scale.x+=deltaX/50;
