@@ -11,7 +11,7 @@
 		<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-analytics.js"></script>
-	
+		<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 		<link rel="stylesheet" href="./w3.css">
 		<style>
@@ -37,6 +37,20 @@
 				
 			}
 
+			#card{
+				margin:3em auto;
+				display:flex;
+				flex-direction:column;
+				max-width:400px;
+				border-radius:6px;
+				overflow:hidden;
+			}
+
+			model-viewer{
+				width:100%;
+				height:400px;
+				background-color:white;
+			}
 
 			body {
 			  font-family: "Lato", sans-serif;
@@ -51,7 +65,7 @@
 			  z-index: 1;
 			  top: 10px;
 			  left: 10px;
-			  background-color: #BFBFBF;
+			  background-color: #ADD8E6;
 			  overflow-x: hidden;
 			  transition: 0.5s;
 			  padding-top: 60px;
@@ -141,6 +155,7 @@
 				<p id='assetinfo' class='asset_info' style='color:white;'>Available Colors : </p>
 				<p class='asset_info'><button type='img' id='one' class='extrathumbnail' height='150' width='150'></button><button type='img' id='two' class='extrathumbnail' height='150' width='150'></button></p>
 				<p class='asset_info' style='font-size:15px;'><button class='sideNavButtons' style='border-radius:25px;'>ADD TO WISHLIST</button></p>
+				<hr>
 				<p id='assetinfo' class='asset_info' style='color:white;'>For a great experience you can do the following</p>
 				<ul>
 					<li style='font-size:15px;'>Swipe horizontally to rotate the Object around</li>
@@ -154,11 +169,15 @@
 			<div class='transformButton'>
 				<span id='transformButtonIcon' class='material-icons w3-jumbo' onclick="isTransformEnabled()" style='color:#008080; border-style:solid; border-color:#008080; border-radius:50%;'>control_camera</span>
 			</div>
+			
+			<model-viewer id='modelViewer' src="tyre.glb" alt="A 3D model of an astronaut" ar ar-modes="webxr scene-viewer quick-look" environment-image="neutral" auto-rotate camera-controls></model-viewer>
+			
 
 		</div>
 		
 		
 		<script>
+
 			//OPTION MENU
 			function openNav() {
 			  document.getElementById("mySidenav").style.width = "75%";
@@ -227,6 +246,7 @@
 				snapshot.docs.forEach(doc=>{
 					if(asset_name==doc.data().asset_name){
 						glb=doc.data().files[0];
+						document.getElementById('modelViewer').src=glb;
 						if(doc.data().files.length>2){
 							thumbone=doc.data().files[2];
 							thumbtwo=doc.data().files[3]
@@ -238,7 +258,7 @@
 						name=doc.data().asset_name;
 					}	
 				})
-			})
+			})	
 
 			import * as THREE from './build/three.module.js';
 			import { ARButton } from './jsm/webxr/ARButton.js';
@@ -377,13 +397,10 @@
 									});
 		
 									scene.add(obj);
-									var box = new THREE.Box3();
-									box.setFromObject(obj);
-									box.getCenter(controls.target);
-
 									controls.update();
 									render();
 									scene.remove(reticle);
+									document.getElementById('modelViewer').remove();
 
 									loadinggif=document.getElementById('loading');
 									loadinggif.remove();
@@ -513,16 +530,16 @@
 			function transformObject(){
 				if(transformIsClicked%2==1){
 					if(obj && reticle.visible){
-						if(Math.abs(deltaX)>Math.abs(deltaY)){
+						if(Math.abs(deltaX)>10*Math.abs(deltaY)){
 							obj.position.x += deltaX / 100;
 						}
-						else if(Math.abs(deltaY)>Math.abs(deltaX)){
+						else if(Math.abs(deltaY)>10*Math.abs(deltaX)){
 							obj.position.y += deltaX / 100;
 							
 						}
-
 						else{
-							;
+							obj.position.z += deltaX / 100;
+
 						}
 					}
 				}
