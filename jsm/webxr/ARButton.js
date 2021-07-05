@@ -99,6 +99,7 @@ class ARButton {
 				if ( currentSession === null ) {
 
 					navigator.xr.requestSession( 'immersive-ar', sessionInit ).then( onSessionStarted );
+					document.getElementById('modelViewer').remove();
 
 				} else {
 
