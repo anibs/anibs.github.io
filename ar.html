@@ -134,6 +134,8 @@
 			}
 
 
+
+
 		</style>
 
 	</head>
@@ -168,7 +170,7 @@
 			<model-viewer id='modelViewer' alt="A 3D model of an astronaut" ar ar-modes="webxr scene-viewer quick-look" environment-image="neutral" auto-rotate camera-controls>
 				<span class='material-icons w3-xxxlarge' onclick="modelViewerClose()" style='color:#000000;'>cancel</span>
 			</model-viewer>
-
+			
 
 		</div>
 		
@@ -332,10 +334,10 @@
 				options.domOverlay={root:document.getElementById('div')};
 				options2.domOverlay={root:document.getElementById('div')}
 				document.body.appendChild( ARButton.createButton( renderer, options ) );
-
+				
 
 				function onSelect() {
-
+					
 					if(c==0){
 						if (reticle.visible){
 
@@ -400,7 +402,10 @@
 									controls.update();
 									render();
 									scene.remove(reticle);
-									document.getElementById('modelViewer').remove();
+									if(document.getElementById('modelViewer')!=null){
+										document.getElementById('modelViewer').remove();
+									}
+									
 
 									loadinggif=document.getElementById('loading');
 									loadinggif.remove();
@@ -497,11 +502,12 @@
 					deltaY = e.touches[0].pageY - touchY;
 					touchX = e.touches[0].pageX;
 					touchY = e.touches[0].pageY;
-					console.log(deltaX, deltaY);
+					
 					if(transformIsClicked%2==1){
 						transformObject();
 					}
 					else{
+
 						rotateObject();
 					}
 					
