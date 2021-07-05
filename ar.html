@@ -164,9 +164,11 @@
 			<div class='transformButton'>
 				<span id='transformButtonIcon' class='material-icons w3-jumbo' onclick="isTransformEnabled()" style='color:#008080; border-style:solid; border-color:#008080; border-radius:50%;'>control_camera</span>
 			</div>
-			
-			<model-viewer id='modelViewer' src="tyre.glb" alt="A 3D model of an astronaut" ar ar-modes="webxr scene-viewer quick-look" environment-image="neutral" auto-rotate camera-controls></model-viewer>
-			
+					
+			<model-viewer id='modelViewer' alt="A 3D model of an astronaut" ar ar-modes="webxr scene-viewer quick-look" environment-image="neutral" auto-rotate camera-controls>
+				<span class='material-icons w3-xxxlarge' onclick="modelViewerClose()" style='color:#000000;'>cancel</span>
+			</model-viewer>
+
 
 		</div>
 		
@@ -197,6 +199,9 @@
 				
 			}
 
+			function modelViewerClose(){
+				document.getElementById('modelViewer').remove();
+			}
 
 		</script>
 
@@ -525,12 +530,11 @@
 			function transformObject(){
 				if(transformIsClicked%2==1){
 					if(obj && reticle.visible){
-						if(Math.abs(deltaX)>Math.abs(deltaY)){
+						if(Math.abs(deltaX)>10*Math.abs(deltaY)){
 							obj.position.x += deltaX / 100;
 						}
 						else{
 							obj.position.y += deltaX / 100;
-							
 						}
 					}
 				}
