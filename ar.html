@@ -306,16 +306,6 @@
 				renderer.shadowMap.enabled = true;
 				container.appendChild( renderer.domElement );
 
-				controls= new OrbitControls(camera, renderer.domElement);
-				controls.addEventListener('change', render);
-				controls.minDistance = 2;
-				controls.maxDistance = 10;
-				controls.target.set(0, 0, -0.2);
-				controls.enableDamping = true;
-				controls.dampingFactor = 0.05;
-				
-				
-
 				let options={
 					requiredFeatures:['hit-test'],
 					optionalFeatures:['dom-overlay'],
@@ -391,7 +381,6 @@
 									});
 		
 									scene.add(obj);
-									controls.update();
 									render();
 									scene.remove(reticle);
 									if(document.getElementById('modelViewer')!=null){
@@ -567,7 +556,6 @@
 
 				renderer.setAnimationLoop( render );
 				requestAnimationFrame( animate );
-				controls.update();
 			}
 
 			function render( timestamp, frame ) {
