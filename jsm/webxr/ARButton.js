@@ -3,6 +3,7 @@ class ARButton {
 	static createButton( renderer, sessionInit = {} ) {
 
 		const button = document.createElement( 'button' );
+		var openButtonIcon;var transformButtonIcon;
 
 		function showStartAR( /*device*/ ) {
 
@@ -100,6 +101,12 @@ class ARButton {
 
 					navigator.xr.requestSession( 'immersive-ar', sessionInit ).then( onSessionStarted );
 					document.getElementById('modelViewer').remove();
+					openButtonIcon=document.getElementById('openButtonIcon');
+					openButtonIcon.style.color="white";
+					openButtonIcon.style.borderColor="white";
+					transformButtonIcon=document.getElementById('transformButtonIcon');
+					transformButtonIcon.style.color="white";
+					transformButtonIcon.style.borderColor="white";
 
 				} else {
 
