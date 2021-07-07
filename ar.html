@@ -644,19 +644,23 @@
 						}
 						else if(x>5 && y>5){
 							dir='SE';
-							obj.position.z+=Math.abs(joystick1.value.y)/100;
+							obj.position.x+=Math.abs(joystick1.value.x)/200;
+							obj.position.z+=Math.abs(joystick1.value.y)/200;
 						}
 						else if(x<-5 && y<-5){
 							dir='NW';
-							obj.position.z-=Math.abs(joystick1.value.y)/100;
+							obj.position.x-=Math.abs(joystick1.value.x)/200;
+							obj.position.z-=Math.abs(joystick1.value.y)/200;
 						}
 						else if(x>5 && y<-5){
 							dir='NE';
-							obj.position.z-=Math.abs(joystick1.value.y)/100;
+							obj.position.x+=Math.abs(joystick1.value.x)/200;
+							obj.position.z-=Math.abs(joystick1.value.y)/200;
 						}
 						else if(x<-5 && y>5){
 							dir='SW';
-							obj.position.z+=Math.abs(joystick1.value.y)/100;
+							obj.position.x-=Math.abs(joystick1.value.x)/200;
+							obj.position.z+=Math.abs(joystick1.value.y)/200;
 						}
 						if(dir!=undefined){
 							//console.log(dir);
