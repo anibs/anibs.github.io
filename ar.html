@@ -13,6 +13,7 @@
 		<script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-analytics.js"></script>
 		<script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+		<script src="joy.js"></script>
 		<link rel="stylesheet" href="./w3.css">
 		<style>
 
@@ -127,6 +128,14 @@
 				right:20px;	
 
 			}
+		
+
+			.buttons{
+				left:20px;
+			}
+
+
+
 
 		</style>
 
@@ -155,17 +164,26 @@
 			<div class='openButton'>
 				<span id='openButtonIcon' class="material-icons w3-jumbo" onclick="openNav()" style='color:#008080; border-style:solid; border-color:#008080; border-radius:50%;'>info</span>
 			</div>
-			<div class='transformButton'>
+			<!--<div class='transformButton'>
 				<span id='transformButtonIcon' class='material-icons w3-jumbo' onclick="isTransformEnabled()" style='color:#008080; border-style:solid; border-color:#008080; border-radius:50%;'>control_camera</span>
-			</div>
+			</div>-->
 					
 			<model-viewer id='modelViewer' alt="A 3D model of an astronaut" ar ar-modes="webxr scene-viewer quick-look" environment-image="neutral" auto-rotate camera-controls>
 				<span class='material-icons w3-xxxlarge' onclick="modelViewerClose()" style='color:#000000;'>cancel</span>
 			</model-viewer>
 			
+			<div style="width: 0px; height:0px;position: fixed; right:10px; bottom:10px;" id='joy'>
+				<img src="joystick-base.png"/>
+				<div id="stick1" style="position: absolute; left:32px; top:32px;">
+				<img src="joystick-blue.png"/>	
+			</div>
+		</div>
 
 		</div>
-		
+		<script>
+			
+
+		</script>
 		
 		<script>
 
@@ -178,7 +196,7 @@
 			  document.getElementById("mySidenav").style.width = "0";
 			}
 			//var transformIsClicked=0;
-			function isTransformEnabled(){
+			/*function isTransformEnabled(){
 				transformIsClicked++;
 				if(transformIsClicked%2==1){
 					console.log('transform mode');
@@ -191,7 +209,7 @@
 					document.getElementById('transformButtonIcon').style.borderColor = "white";
 				}
 				
-			}
+			}*/
 
 			function modelViewerClose(){
 				document.getElementById('modelViewer').remove();
@@ -267,7 +285,7 @@
 			var obj=[];
 			let composer;
 			
-			var infobutton;var divObj;var loadinggif;var openButtonIcon;var transformButtonIcon;
+			var infobutton;var divObj;var loadinggif;
 			
 			let reticle;
 			var changeMat, originalCol;
@@ -275,7 +293,7 @@
 			let hitTestSourceRequested = false;
 			var c=0;
 			let spotlight,spotlight2;
-
+			var dir;var joy;
 			var touchDown, touchX, touchY, deltaX, deltaY;
 			
 			init();
@@ -323,12 +341,7 @@
 					if(c==0){
 						if (reticle.visible){
 
-							openButtonIcon=document.getElementById('openButtonIcon');
-							openButtonIcon.style.color="white";
-							openButtonIcon.style.borderColor="white";
-							transformButtonIcon=document.getElementById('transformButtonIcon');
-							transformButtonIcon.style.color="white";
-							transformButtonIcon.style.borderColor="white";
+							
 							//SHADOW PLANE
 							const planeGeometry = new THREE.PlaneGeometry(2000, 2000);
 							planeGeometry.rotateX(-Math.PI / 2);
@@ -381,6 +394,7 @@
 									});
 		
 									scene.add(obj);
+									
 									render();
 									scene.remove(reticle);
 									if(document.getElementById('modelViewer')!=null){
@@ -396,7 +410,13 @@
 									var imgtwo=document.getElementById('two');
 									imgtwo.innerHTML='<img src='+thumbtwo+' height='+120+' width='+120+'/>';
 									
-									if(transformIsClicked>0){console.log(transformIsClicked);}
+
+									joy=document.getElementById('joy');
+									joy.style.height="128px";
+									joy.style.width="128px";
+
+
+									//if(transformIsClicked>0){console.log(transformIsClicked);}
 
 									//THUMBNAIL ONE
 									imgone.onclick=function MatOne() {
@@ -483,14 +503,8 @@
 					deltaY = e.touches[0].pageY - touchY;
 					touchX = e.touches[0].pageX;
 					touchY = e.touches[0].pageY;
-					
-					if(transformIsClicked%2==1){
-						transformObject();
-					}
-					else{
-
-						rotateObject();
-					}
+					rotateObject();
+									
 					
 
 				}, false);
@@ -510,32 +524,173 @@
 				scene.add( reticle );
 
 				window.addEventListener( 'resize', onWindowResize, false );
+
+				class JoystickController
+				{
+					constructor( stickID, maxDistance, deadzone )
+					{
+						this.id = stickID;
+						let stick = document.getElementById(stickID);
+						this.dragStart = null;
+						this.touchId = null;
+						this.active = false;
+						this.value = { x: 0, y: 0 }; 
+
+						let self = this;
+
+						function handleDown(event)
+						{
+							self.active = true;
+							stick.style.transition = '0s';
+							event.preventDefault();
+
+							if (event.changedTouches)
+		    					self.dragStart = { x: event.changedTouches[0].clientX, y: event.changedTouches[0].clientY };
+							else
+		    					self.dragStart = { x: event.clientX, y: event.clientY };
+							if (event.changedTouches)
+		    					self.touchId = event.changedTouches[0].identifier;
+						}
+		
+						function handleMove(event) 
+						{
+							if ( !self.active ) return;
+							let touchmoveId = null;
+							if (event.changedTouches)
+							{
+		    					for (let i = 0; i < event.changedTouches.length; i++)
+		    					{
+		    						if (self.touchId == event.changedTouches[i].identifier)
+		    						{
+		    							touchmoveId = i;
+		    							event.clientX = event.changedTouches[i].clientX;
+		    							event.clientY = event.changedTouches[i].clientY;
+		    						}
+		    					}
+
+		    					if (touchmoveId == null) return;
+							}
+
+							const xDiff = event.clientX - self.dragStart.x;
+							const yDiff = event.clientY - self.dragStart.y;
+							const angle = Math.atan2(yDiff, xDiff);
+							const distance = Math.min(maxDistance, Math.hypot(xDiff, yDiff));
+							const xPosition = distance * Math.cos(angle);
+							const yPosition = distance * Math.sin(angle);
+
+							// move stick image to new position
+							stick.style.transform = `translate3d(${xPosition}px, ${yPosition}px, 0px)`;
+
+							// deadzone adjustment
+							const distance2 = (distance < deadzone) ? 0 : maxDistance / (maxDistance - deadzone) * (distance - deadzone);
+							const xPosition2 = distance2 * Math.cos(angle);
+							const yPosition2 = distance2 * Math.sin(angle);
+							var xPercent = parseFloat((xPosition2 / maxDistance).toFixed(4));
+							var yPercent = parseFloat((yPosition2 / maxDistance).toFixed(4));
+							if(Math.abs(xPercent)*10<4){
+								xPercent=0;
+							}
+							if(Math.abs(yPercent)*10<4){
+								yPercent=0;
+							}
+
+							self.value = { x: xPercent*10, y: yPercent*10 };
+						  }
+
+						function handleUp(event) 
+						{
+							if ( !self.active ) return;
+							if (event.changedTouches && self.touchId != event.changedTouches[0].identifier) return;
+
+							stick.style.transition = '.2s';
+							stick.style.transform = `translate3d(0px, 0px, 0px)`;
+
+							self.value = { x: 0, y: 0 };
+							self.touchId = null;
+							self.active = false;
+						}
+
+						stick.addEventListener('mousedown', handleDown);
+						stick.addEventListener('touchstart', handleDown);
+						document.addEventListener('mousemove', handleMove, {passive: false});
+						document.addEventListener('touchmove', handleMove, {passive: false});
+						document.addEventListener('mouseup', handleUp);
+						document.addEventListener('touchend', handleUp);
+					}
+				}
+
+				let joystick1 = new JoystickController("stick1", 64, 8);
+
+				function update()
+				{
 				
+					if(JSON.stringify(joystick1.value)!='{"x":0,"y":0}'){
+						var x=joystick1.value.x;var y=joystick1.value.y;
+						if(x>7 && x-y>7){
+							dir='E';
+							obj.position.x+=Math.abs(joystick1.value.x)/100;
+						}
+						else if(y>7 && y-x>7){
+							dir='S';
+							obj.position.y-=Math.abs(joystick1.value.y)/100;
+						}
+						else if(x<-7 && Math.abs(x)-Math.abs(y)>7){
+							dir='W';
+							obj.position.x-=Math.abs(joystick1.value.x)/100;
+						}
+						else if(y<-7 && Math.abs(y)-Math.abs(x)>7){
+							dir='N';
+							obj.position.y+=Math.abs(joystick1.value.y)/100;
+						}
+						else if(x>5 && y>5){
+							dir='SE';
+							obj.position.z+=Math.abs(joystick1.value.y)/100;
+						}
+						else if(x<-5 && y<-5){
+							dir='NW';
+							obj.position.z-=Math.abs(joystick1.value.y)/100;
+						}
+						else if(x>5 && y<-5){
+							dir='NE';
+							obj.position.z-=Math.abs(joystick1.value.y)/100;
+						}
+						else if(x<-5 && y>5){
+							dir='SW';
+							obj.position.z+=Math.abs(joystick1.value.y)/100;
+						}
+						if(dir!=undefined){
+							//console.log(dir);
+
+						}
+					}
+					else{
+						dir='origin';
+					}
+					return dir;
+				}
+
+				function loop()
+				{
+					requestAnimationFrame(loop);
+					var dir=update();
+					if(dir!='origin'){
+						console.log(dir);
+						
+					}
+				}
+				loop();
 			}
 
 			
+
 			function transformObject(){
-				if(transformIsClicked%2==1){
-					if(obj && reticle.visible){
-						if(Math.abs(deltaX)>10*Math.abs(deltaY)){
-							obj.position.x += deltaX / 100;
-						}
-						else{
-							obj.position.y += deltaX / 100;
-						}
-					}
-				}
-				
+				console.log(dir);
 			}
-			
-			
 
 			function rotateObject(){
 				if(obj && reticle.visible){
 					if(Math.abs(deltaX)>Math.abs(deltaY)){
 						obj.rotation.y += deltaX / 100;
-						//obj.rotation.x += deltaY / 100;
-						//obj.rotation.z += deltaY / 100;
 					}
 					else{
 						obj.scale.x+=deltaX/50;
@@ -543,7 +698,10 @@
 						obj.scale.z+=deltaX/50;
 					}
 				}
+				console.log('hey');
 			}
+
+			
 
 			function onWindowResize() {
 
@@ -556,6 +714,7 @@
 
 				renderer.setAnimationLoop( render );
 				requestAnimationFrame( animate );
+				//controls.update();
 			}
 
 			function render( timestamp, frame ) {
