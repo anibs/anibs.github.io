@@ -14,36 +14,46 @@
 
     <style>
 
-        body{
+       body{
             background-image:url('bg2306.jpg');
             background-repeat: no-repeat; 
+            background-attachment: fixed;
+            background-position: center;
         }      
         
         div.container{
             margin:auto;
-            columns:5;
+            columns:1;
         }
 
         div.gallery {
-            margin:auto;
-            
-            padding-bottom:10px;
+            margin-left:215px;
+            padding-bottom:30px;
             width: 150px;
             height: 150px;
+            
         }
 
         div.gallery img {
             width: 100%;
             height: 100%;
+            border:3px solid #ccc;
         }
 
-        div.desc {
-            padding: 10px;
-            background-color:white;
-            margin:10px;
-            width:150px;
-            border:3px solid #ccc;
+        div.gallery p {
+            
+            background-color:#383838;
+            opacity:0.5;
+            
+            margin-left:180px;
+            margin-top:-160px;
+            width:350px;
+            height:150px;
+            border:4px solid #ccc;
             text-align: center;
+            color:white;
+            line-height: 150px;
+            font-size: 40px;
         }
 
         div.heading {
@@ -60,17 +70,26 @@
 
         div.footer {
             font-family: 'Comfortaa', cursive;
-            width: 100%;
+            width: 94%;
             bottom: 1px;
             color:white;
             font-weight: 900;
             padding: 15px;
-            margin: auto;
+            margin-left:1px;
             background-color:gray;
             border: 5px solid #ccc;
             text-align: center;
             position:fixed;
+            opacity:0.9;
         }
+
+        .loading{
+			position:fixed;
+			z-index: 1;
+			top: 45%;
+			right: 42%;
+				
+		}
 
     </style>
 
